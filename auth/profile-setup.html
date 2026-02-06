@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil Kurulumu - KurumsalCo</title>
+  <link rel="stylesheet" href="auth.css">
+  <style>
+    .steps-bar{display:flex;align-items:center;gap:0;margin-bottom:32px;}
+    .step{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text-muted);flex:1;}
+    .step-num{
+      width:32px;height:32px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:13px;font-weight:700;border:2px solid var(--border);
+      color:var(--text-muted);transition:var(--ease);flex-shrink:0;
+    }
+    .step.active .step-num{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 2px 8px var(--primary-glow);}
+    .step.active{color:var(--text);}
+    .step.done .step-num{background:var(--success);border-color:var(--success);color:#fff;}
+    .step.done{color:var(--success);}
+    .step-line{flex:1;height:2px;background:var(--border);margin:0 8px;border-radius:1px;}
+    .step.done + .step-line,.step.active + .step-line{background:var(--primary);}
+    @media(max-width:480px){.step span:not(.step-num){display:none;}}
+  </style>
+</head>
+<body>
+  <div class="theme-btn" onclick="document.body.classList.toggle('dark');this.textContent=document.body.classList.contains('dark')?'\u263E':'\u2600'">&#9788;</div>
+  <div class="auth-page">
+    <div class="auth-side">
+      <div class="auth-side-content">
+        <div class="auth-side-logo">K</div>
+        <h2>Profilinizi Tamamlayin</h2>
+        <p>Birkaç adimda hesabinizi kisisellestirin ve en iyi deneyimi elde edin.</p>
+        <div class="auth-side-features">
+          <div class="auth-feature"><div class="auth-feature-icon">&#128100;</div> Kisisel bilgiler</div>
+          <div class="auth-feature"><div class="auth-feature-icon">&#127912;</div> Profil fotografi</div>
+          <div class="auth-feature"><div class="auth-feature-icon">&#128172;</div> Hakkinda yazisi</div>
+          <div class="auth-feature"><div class="auth-feature-icon">&#128222;</div> Iletisim bilgileri</div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-main">
+      <div class="auth-card" style="max-width:500px;">
+        <div class="auth-card-header" style="margin-bottom:20px;">
+          <div class="auth-logo-sm">K</div>
+          <h1>Profil Kurulumu &#128100;</h1>
+          <p>Son bir adim! Bilgilerinizi tamamlayin.</p>
+        </div>
+
+        <!-- Steps -->
+        <div class="steps-bar">
+          <div class="step done"><div class="step-num">&#10003;</div><span>Hesap</span></div>
+          <div class="step-line" style="background:var(--success);"></div>
+          <div class="step done"><div class="step-num">&#10003;</div><span>Dogrulama</span></div>
+          <div class="step-line" style="background:var(--primary);"></div>
+          <div class="step active"><div class="step-num">3</div><span>Profil</span></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">4</div><span>Tamamla</span></div>
+        </div>
+
+        <form class="auth-form" onsubmit="return false;">
+          <!-- Avatar -->
+          <div class="avatar-upload">
+            <div class="avatar-circle">
+              AY
+              <div class="avatar-overlay">&#128247;</div>
+            </div>
+            <span class="avatar-hint">Profil fotografi yükleyin (JPG, PNG - Max 5MB)</span>
+            <button type="button" class="btn btn-secondary" style="height:36px;font-size:13px;padding:0 16px;">&#128247; Fotograf Seç</button>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group">
+              <label class="form-label">Ad <span class="req">*</span></label>
+              <div class="input-wrapper">
+                <span class="input-icon">&#128100;</span>
+                <input type="text" class="form-input" value="Ahmet" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Soyad <span class="req">*</span></label>
+              <div class="input-wrapper">
+                <span class="input-icon">&#128100;</span>
+                <input type="text" class="form-input" value="Yilmaz" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Unvan / Pozisyon</label>
+            <div class="input-wrapper">
+              <span class="input-icon">&#128188;</span>
+              <input type="text" class="form-input" placeholder="orn. Yazilim Mühendisi">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Telefon Numarasi</label>
+            <div class="input-wrapper">
+              <span class="input-icon">&#128222;</span>
+              <input type="tel" class="form-input" placeholder="+90 5XX XXX XX XX">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Biyografi</label>
+            <textarea class="form-input no-icon" rows="3" placeholder="Kendinizden kisaca bahsedin..."></textarea>
+            <div class="form-hint">Maksimum 300 karakter</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Web Sitesi</label>
+            <div class="input-wrapper">
+              <span class="input-icon">&#127760;</span>
+              <input type="url" class="form-input" placeholder="https://siteniz.com">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Konum</label>
+            <div class="input-wrapper">
+              <span class="input-icon">&#128205;</span>
+              <input type="text" class="form-input" placeholder="orn. Istanbul, Türkiye">
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;padding-top:4px;">
+            <button type="button" class="btn btn-secondary" style="flex:1;">&#8592; Geri</button>
+            <button type="submit" class="btn btn-primary" style="flex:2;">Profili Kaydet ve Devam Et &#10145;</button>
+          </div>
+        </form>
+
+        <div class="auth-footer">
+          <a href="#" style="font-size:13px;">Daha sonra tamamla &#8594;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

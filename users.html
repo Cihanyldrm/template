@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kullanici Yönetimi - Kurumsal Admin Panel</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Page-specific styles */
+    .user-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .user-stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: var(--transition);
+    }
+    .user-stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    .user-stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .user-stat-info h3 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .user-stat-info p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .filter-bar .form-input,
+    .filter-bar .form-select {
+      height: 40px;
+      font-size: 13px;
+    }
+    .search-filter {
+      width: 280px;
+    }
+    .select-filter {
+      width: 160px;
+    }
+
+    /* User info cell */
+    .user-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-cell-info h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .user-cell-info span {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Actions cell */
+    .action-btns {
+      display: flex;
+      gap: 6px;
+    }
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      font-size: 14px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+    }
+    .action-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(99,102,241,0.05);
+    }
+    .action-btn.danger:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+      background: rgba(239,68,68,0.05);
+    }
+
+    /* Modal-like Add User Form */
+    .modal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl);
+      margin-bottom: 30px;
+    }
+    .modal-card-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-card-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .modal-card-body {
+      padding: 24px;
+    }
+    .modal-card-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* Table footer */
+    .table-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-top: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .table-footer-info {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Checkbox in table */
+    .table-check {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    /* Role badges */
+    .role-admin {
+      background: rgba(99,102,241,0.1);
+      color: var(--primary);
+    }
+    .role-editor {
+      background: rgba(6,182,212,0.1);
+      color: var(--accent);
+    }
+    .role-user {
+      background: rgba(16,185,129,0.1);
+      color: var(--success);
+    }
+    .role-viewer {
+      background: rgba(245,158,11,0.1);
+      color: var(--warning);
+    }
+
+    @media (max-width: 768px) {
+      .user-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .search-filter {
+        width: 100%;
+      }
+      .select-filter {
+        width: 100%;
+      }
+    }
+    @media (max-width: 480px) {
+      .user-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Overlay (Mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="layout">
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">K</div>
+        <div class="sidebar-brand">
+          <h2>KurumsalCo</h2>
+          <span>Admin Panel</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Ana Menü</div>
+          <div class="sidebar-nav-item">
+            <a href="index.html" class="sidebar-nav-link">
+              <span class="icon">&#9673;</span>
+              Dashboard
+            </a>
+          </div>
+          <div class="sidebar-nav-item sidebar-dropdown">
+            <div class="sidebar-nav-link" onclick="this.parentElement.classList.toggle('open')">
+              <span class="icon">&#9683;</span>
+              Analizler
+              <span class="arrow">&#9662;</span>
+            </div>
+            <div class="sidebar-submenu">
+              <a href="analytics.html">Analytics Dashboard</a>
+              <a href="reports.html">Genel Bakis</a>
+              <a href="reports.html#traffic">Trafik Analizi</a>
+              <a href="reports.html#revenue">Gelir Raporu</a>
+            </div>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="analytics.html" class="sidebar-nav-link">
+              <span class="icon">&#128200;</span>
+              Analytics</a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="reports.html" class="sidebar-nav-link">
+              <span class="icon">&#128202;</span>
+              Raporlar
+            </a>
+          </div>
+        </div>
+
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Yönetim</div>
+          <div class="sidebar-nav-item">
+            <a href="users.html" class="sidebar-nav-link active">
+              <span class="icon">&#9787;</span>
+              Kullanicilar
+              <span class="badge">24</span>
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="products.html" class="sidebar-nav-link">
+              <span class="icon">&#9830;</span>
+              Ürünler
+            </a>
+          </div>
+          <div class="sidebar-nav-item sidebar-dropdown">
+            <div class="sidebar-nav-link" onclick="this.parentElement.classList.toggle('open')">
+              <span class="icon">&#9733;</span>
+              E-Ticaret
+              <span class="arrow">&#9662;</span>
+            </div>
+            <div class="sidebar-submenu">
+              <a href="#">Siparisler</a>
+              <a href="#">Kategoriler</a>
+              <a href="#">Kampanyalar</a>
+            </div>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="billing.html" class="sidebar-nav-link">
+              <span class="icon">&#128179;</span>
+              Faturalar
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="notifications.html" class="sidebar-nav-link">
+              <span class="icon">&#128276;</span>
+              Bildirimler
+              <span class="badge danger">12</span>
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="chat.html" class="sidebar-nav-link">
+              <span class="icon">&#128172;</span>
+              Mesajlar
+              <span class="badge danger">5</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Sistem</div>
+          <div class="sidebar-nav-item">
+            <a href="audit-logs.html" class="sidebar-nav-link">
+              <span class="icon">&#128220;</span>
+              Audit Log
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="settings.html" class="sidebar-nav-link">
+              <span class="icon">&#9881;</span>
+              Ayarlar
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="security.html" class="sidebar-nav-link">
+              <span class="icon">&#128274;</span>
+              Güvenlik
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">AY</div>
+          <div class="sidebar-user-info">
+            <h4>Ahmet Yilmaz</h4>
+            <span>Süper Admin</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="topbar-menu-btn" onclick="toggleSidebar()">&#9776;</button>
+          <div class="topbar-search">
+            <span class="search-icon">&#128269;</span>
+            <input type="text" placeholder="Ara... (sayfa, kullanici, ürün)">
+            <span class="search-shortcut">Ctrl+K</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-icon-btn">&#128276;</div>
+          <div class="theme-toggle" onclick="toggleTheme()">
+            <div class="theme-toggle-circle">
+              <span id="themeIcon">&#9788;</span>
+            </div>
+          </div>
+          <div class="dropdown">
+            <div class="topbar-user" tabindex="0">
+              <div class="topbar-user-avatar">AY</div>
+              <div>
+                <div class="topbar-user-name">Ahmet Yilmaz</div>
+                <div class="topbar-user-role">Süper Admin</div>
+              </div>
+            </div>
+            <div class="dropdown-menu">
+              <a href="#">&#128100; Profilim</a>
+              <a href="settings.html">&#9881; Ayarlar</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" style="color:var(--danger);">&#10145; Cikis Yap</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="page-wrapper">
+        <!-- Breadcrumb & Header -->
+        <div class="breadcrumb animate-fade">
+          <a href="index.html">Ana Sayfa</a>
+          <span class="separator">&#10095;</span>
+          <span class="current">Kullanici Yönetimi</span>
+        </div>
+
+        <div class="page-header animate-fade">
+          <div class="page-header-row">
+            <div>
+              <h1>Kullanici Yönetimi</h1>
+              <p>Tüm kullanicilari yönetin, düzenleyin ve yeni kullanici ekleyin.</p>
+            </div>
+            <div class="flex" style="gap:10px;">
+              <a href="#addUserForm" class="btn btn-primary">&#10010; Yeni Kullanici</a>
+              <button class="btn btn-secondary">&#128229; Disari Aktar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Stats -->
+        <div class="user-stats animate-fade">
+          <div class="user-stat-card">
+            <div class="user-stat-icon" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#128101;</div>
+            <div class="user-stat-info">
+              <h3>3,456</h3>
+              <p>Toplam Kullanici</p>
+            </div>
+          </div>
+          <div class="user-stat-card">
+            <div class="user-stat-icon" style="background:rgba(16,185,129,0.1);color:var(--success);">&#10003;</div>
+            <div class="user-stat-info">
+              <h3>2,890</h3>
+              <p>Aktif Kullanici</p>
+            </div>
+          </div>
+          <div class="user-stat-card">
+            <div class="user-stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning);">&#9203;</div>
+            <div class="user-stat-info">
+              <h3>342</h3>
+              <p>Bekleyen Onay</p>
+            </div>
+          </div>
+          <div class="user-stat-card">
+            <div class="user-stat-icon" style="background:rgba(239,68,68,0.1);color:var(--danger);">&#128683;</div>
+            <div class="user-stat-info">
+              <h3>224</h3>
+              <p>Deaktif</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add User Form -->
+        <div class="modal-card animate-slide-up mb-3" id="addUserForm">
+          <div class="modal-card-header">
+            <h3>&#128100; Yeni Kullanici Ekle</h3>
+            <span class="badge badge-info">Form</span>
+          </div>
+          <div class="modal-card-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Ad <span class="required">*</span></label>
+                <input type="text" class="form-input" placeholder="Kullanici adi">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Soyad <span class="required">*</span></label>
+                <input type="text" class="form-input" placeholder="Kullanici soyadi">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">E-posta <span class="required">*</span></label>
+                <input type="email" class="form-input" placeholder="ornek@sirket.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Telefon</label>
+                <input type="tel" class="form-input" placeholder="+90 5XX XXX XX XX">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Rol <span class="required">*</span></label>
+                <select class="form-select">
+                  <option>Rol seçiniz</option>
+                  <option>Süper Admin</option>
+                  <option>Admin</option>
+                  <option>Editör</option>
+                  <option>Kullanici</option>
+                  <option>Görüntüleyici</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Departman</label>
+                <select class="form-select">
+                  <option>Departman seçiniz</option>
+                  <option>Yazilim</option>
+                  <option>Pazarlama</option>
+                  <option>Satis</option>
+                  <option>Insan Kaynaklari</option>
+                  <option>Finans</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Not</label>
+              <textarea class="form-input" rows="3" placeholder="Ek bilgi veya not ekleyin..."></textarea>
+            </div>
+            <div class="form-checkbox-group">
+              <input type="checkbox" class="form-checkbox" id="sendInvite" checked>
+              <label for="sendInvite" style="font-size:14px;color:var(--text-secondary);">Davetiye e-postasi gönder</label>
+            </div>
+          </div>
+          <div class="modal-card-footer">
+            <button class="btn btn-secondary">Iptal</button>
+            <button class="btn btn-primary">&#10003; Kullanici Ekle</button>
+          </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="card animate-slide-up">
+          <div class="card-header">
+            <h3>Kullanici Listesi</h3>
+            <div class="filter-bar">
+              <input type="text" class="form-input search-filter" placeholder="&#128269; Kullanici ara...">
+              <select class="form-select select-filter">
+                <option>Tüm Roller</option>
+                <option>Admin</option>
+                <option>Editör</option>
+                <option>Kullanici</option>
+                <option>Görüntüleyici</option>
+              </select>
+              <select class="form-select select-filter">
+                <option>Tüm Durumlar</option>
+                <option>Aktif</option>
+                <option>Deaktif</option>
+                <option>Bekliyor</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" class="table-check"></th>
+                  <th>Kullanici</th>
+                  <th>E-posta</th>
+                  <th>Rol</th>
+                  <th>Durum</th>
+                  <th>Son Giris</th>
+                  <th>Islemler</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox" class="table-check"></td>
+                  <td>
+                    <div class="user-cell">
+                      <div class="avatar" style="background:var(--gradient-primary);">AY</div>
+                      <div class="user-cell-info">
+                        <h4>Ahmet Yilmaz</h4>
+                        <span>Yazilim Departmani</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>ahmet@kurumsal.com</td>
+                  <td><span class="badge role-admin">Süper Admin</span></td>
+                  <td><span class="badge badge-success"><span class="status-dot online"></span> Aktif</span></td>
+                  <td style="color:var(--text-muted);font-size:13px;">2 saat önce</td>
+                  <td>
+                    <div class="action-btns">
+                      <div class="action-btn" title="Düzenle">&#9998;</div>
+                      <div class="action-btn" title="Görüntüle">&#128065;</div>
+                      <div class="action-btn danger" title="Sil">&#128465;</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="table-check"></td>
+                  <td>
+                    <div class="user-cell">
+                      <div class="avatar" style="background:var(--gradient-accent);">ZK</div>
+                      <div class="user-cell-info">
+                        <h4>Zeynep Kaya</h4>
+                        <span>Pazarlama Departmani</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>zeynep@kurumsal.com</td>
+                  <td><span class="badge role-editor">Editör</span></td>
+                  <td><span class="badge badge-success"><span class="status-dot online"></span> Aktif</span></td>
+                  <td style="color:var(--text-muted);font-size:13px;">15 dk önce</td>
+                  <td>
+                    <div class="action-btns">
+                      <div class="action-btn" title="Düzenle">&#9998;</div>
+                      <div class="action-btn" title="Görüntüle">&#128065;</div>
+                      <div class="action-btn danger" title="Sil">&#128465;</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="table-check"></td>
+                  <td>
+                    <div class="user-cell">
+                      <div class="avatar" style="background:var(--gradient-success);">MD</div>
+                      <div class="user-cell-info">
+                        <h4>Mehmet Demir</h4>
+                        <span>Satis Departmani</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>mehmet@kurumsal.com</td>
+                  <td><span class="badge role-user">Kullanici</span></td>
+                  <td><span class="badge badge-warning"><span class="status-dot busy"></span> Bekliyor</span></td>
+                  <td style="color:var(--text-muted);font-size:13px;">3 gün önce</td>
+                  <td>
+                    <div class="action-btns">
+                      <div class="action-btn" title="Düzenle">&#9998;</div>
+                      <div class="action-btn" title="Görüntüle">&#128065;</div>
+                      <div class="action-btn danger" title="Sil">&#128465;</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="table-check"></td>
+                  <td>
+                    <div class="user-cell">
+                      <div class="avatar" style="background:var(--gradient-warm);">SB</div>
+                      <div class="user-cell-info">
+                        <h4>Selin Basak</h4>
+                        <span>IK Departmani</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>selin@kurumsal.com</td>
+                  <td><span class="badge role-viewer">Görüntüleyici</span></td>
+                  <td><span class="badge badge-success"><span class="status-dot online"></span> Aktif</span></td>
+                  <td style="color:var(--text-muted);font-size:13px;">1 saat önce</td>
+                  <td>
+                    <div class="action-btns">
+                      <div class="action-btn" title="Düzenle">&#9998;</div>
+                      <div class="action-btn" title="Görüntüle">&#128065;</div>
+                      <div class="action-btn danger" title="Sil">&#128465;</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="table-check"></td>
+                  <td>
+                    <div class="user-cell">
+                      <div class="avatar" style="background:linear-gradient(135deg,#64748b,#475569);">CO</div>
+                      <div class="user-cell-info">
+                        <h4>Can Ozturk</h4>
+                        <span>Finans Departmani</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>can@kurumsal.com</td>
+                  <td><span class="badge role-admin">Admin</span></td>
+                  <td><span class="badge badge-danger"><span class="status-dot offline"></span> Deaktif</span></td>
+                  <td style="color:var(--text-muted);font-size:13px;">2 hafta önce</td>
+                  <td>
+                    <div class="action-btns">
+                      <div class="action-btn" title="Düzenle">&#9998;</div>
+                      <div class="action-btn" title="Görüntüle">&#128065;</div>
+                      <div class="action-btn danger" title="Sil">&#128465;</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="table-check"></td>
+                  <td>
+                    <div class="user-cell">
+                      <div class="avatar" style="background:linear-gradient(135deg,#ec4899,#f43f5e);">EA</div>
+                      <div class="user-cell-info">
+                        <h4>Ece Aksoy</h4>
+                        <span>Pazarlama Departmani</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>ece@kurumsal.com</td>
+                  <td><span class="badge role-editor">Editör</span></td>
+                  <td><span class="badge badge-success"><span class="status-dot online"></span> Aktif</span></td>
+                  <td style="color:var(--text-muted);font-size:13px;">Simdi</td>
+                  <td>
+                    <div class="action-btns">
+                      <div class="action-btn" title="Düzenle">&#9998;</div>
+                      <div class="action-btn" title="Görüntüle">&#128065;</div>
+                      <div class="action-btn danger" title="Sil">&#128465;</div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <div class="table-footer-info">
+              Toplam <strong>24</strong> kullanicidan <strong>1-6</strong> arasi gösteriliyor
+            </div>
+            <div class="pagination">
+              <div class="pagination-btn disabled">&#8592;</div>
+              <div class="pagination-btn active">1</div>
+              <div class="pagination-btn">2</div>
+              <div class="pagination-btn">3</div>
+              <div class="pagination-btn">4</div>
+              <div class="pagination-btn">&#8594;</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /page-wrapper -->
+    </div><!-- /main-content -->
+  </div><!-- /layout -->
+
+  <script src="app.js"></script>
+</body>
+</html>

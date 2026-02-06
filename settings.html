@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ayarlar - Kurumsal Admin Panel</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Settings layout */
+    .settings-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 30px;
+    }
+
+    /* Settings sidebar */
+    .settings-sidebar {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 12px;
+      height: fit-content;
+      position: sticky;
+      top: calc(var(--topbar-height) + 30px);
+    }
+    .settings-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    .settings-nav-item:hover {
+      background: var(--bg-input);
+      color: var(--text-primary);
+    }
+    .settings-nav-item.active {
+      background: rgba(99,102,241,0.1);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    body.dark .settings-nav-item.active {
+      background: rgba(99,102,241,0.2);
+    }
+    .settings-nav-item .s-icon {
+      font-size: 18px;
+      width: 22px;
+      text-align: center;
+    }
+
+    /* Settings content */
+    .settings-content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Section cards */
+    .settings-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .settings-section-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .settings-section-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .settings-section-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .settings-section-body {
+      padding: 24px;
+    }
+    .settings-section-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      background: var(--bg-input);
+    }
+
+    /* Profile avatar upload */
+    .avatar-upload {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .avatar-upload-img {
+      width: 96px;
+      height: 96px;
+      border-radius: var(--radius-full);
+      background: var(--gradient-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 32px;
+      font-weight: 800;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .avatar-upload-img .avatar-overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-full);
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: var(--transition);
+      cursor: pointer;
+      font-size: 20px;
+    }
+    .avatar-upload-img:hover .avatar-overlay {
+      opacity: 1;
+    }
+    .avatar-upload-info h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .avatar-upload-info p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    /* Setting row (for toggles) */
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+    .setting-row-info h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .setting-row-info p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Color palette */
+    .color-options {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .color-option {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+      border: 3px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #fff;
+    }
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+    .color-option.selected {
+      border-color: var(--text-primary);
+      box-shadow: var(--shadow-lg);
+      transform: scale(1.1);
+    }
+
+    /* Theme preview cards */
+    .theme-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .theme-card {
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+    }
+    .theme-card:hover {
+      border-color: var(--primary-light);
+    }
+    .theme-card.selected {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-glow);
+    }
+    .theme-card-preview {
+      width: 100%;
+      height: 80px;
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+    }
+    .theme-card h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .theme-card p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Danger zone */
+    .danger-zone {
+      border-color: rgba(239,68,68,0.3);
+    }
+    .danger-zone .settings-section-header {
+      border-bottom-color: rgba(239,68,68,0.2);
+    }
+    .danger-zone-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .danger-zone-item:last-child {
+      border-bottom: none;
+    }
+    .danger-zone-item h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--danger);
+      margin-bottom: 2px;
+    }
+    .danger-zone-item p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Keyboard shortcuts table */
+    .shortcut-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .shortcut-row:last-child {
+      border-bottom: none;
+    }
+    .shortcut-key {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .key {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      height: 28px;
+      padding: 0 8px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      box-shadow: 0 1px 0 var(--border-color);
+    }
+
+    @media (max-width: 1024px) {
+      .settings-layout {
+        grid-template-columns: 1fr;
+      }
+      .settings-sidebar {
+        position: static;
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 8px;
+      }
+      .settings-nav-item {
+        white-space: nowrap;
+        padding: 10px 14px;
+        font-size: 13px;
+      }
+    }
+    @media (max-width: 768px) {
+      .theme-cards {
+        grid-template-columns: 1fr;
+      }
+      .avatar-upload {
+        flex-direction: column;
+        text-align: center;
+      }
+      .setting-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .danger-zone-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Overlay (Mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="layout">
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">K</div>
+        <div class="sidebar-brand">
+          <h2>KurumsalCo</h2>
+          <span>Admin Panel</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Ana Menü</div>
+          <div class="sidebar-nav-item">
+            <a href="index.html" class="sidebar-nav-link">
+              <span class="icon">&#9673;</span>
+              Dashboard
+            </a>
+          </div>
+          <div class="sidebar-nav-item sidebar-dropdown">
+            <div class="sidebar-nav-link" onclick="this.parentElement.classList.toggle('open')">
+              <span class="icon">&#9683;</span>
+              Analizler
+              <span class="arrow">&#9662;</span>
+            </div>
+            <div class="sidebar-submenu">
+              <a href="analytics.html">Analytics Dashboard</a>
+              <a href="reports.html">Genel Bakis</a>
+              <a href="reports.html#traffic">Trafik Analizi</a>
+              <a href="reports.html#revenue">Gelir Raporu</a>
+            </div>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="analytics.html" class="sidebar-nav-link">
+              <span class="icon">&#128200;</span>
+              Analytics</a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="reports.html" class="sidebar-nav-link">
+              <span class="icon">&#128202;</span>
+              Raporlar
+            </a>
+          </div>
+        </div>
+
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Yönetim</div>
+          <div class="sidebar-nav-item">
+            <a href="users.html" class="sidebar-nav-link">
+              <span class="icon">&#9787;</span>
+              Kullanicilar
+              <span class="badge">24</span>
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="products.html" class="sidebar-nav-link">
+              <span class="icon">&#9830;</span>
+              Ürünler
+            </a>
+          </div>
+          <div class="sidebar-nav-item sidebar-dropdown">
+            <div class="sidebar-nav-link" onclick="this.parentElement.classList.toggle('open')">
+              <span class="icon">&#9733;</span>
+              E-Ticaret
+              <span class="arrow">&#9662;</span>
+            </div>
+            <div class="sidebar-submenu">
+              <a href="#">Siparisler</a>
+              <a href="#">Kategoriler</a>
+              <a href="#">Kampanyalar</a>
+            </div>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="billing.html" class="sidebar-nav-link">
+              <span class="icon">&#128179;</span>
+              Faturalar
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="notifications.html" class="sidebar-nav-link">
+              <span class="icon">&#128276;</span>
+              Bildirimler
+              <span class="badge danger">12</span>
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="chat.html" class="sidebar-nav-link">
+              <span class="icon">&#128172;</span>
+              Mesajlar
+              <span class="badge danger">5</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Sistem</div>
+          <div class="sidebar-nav-item">
+            <a href="audit-logs.html" class="sidebar-nav-link">
+              <span class="icon">&#128220;</span>
+              Audit Log
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="settings.html" class="sidebar-nav-link active">
+              <span class="icon">&#9881;</span>
+              Ayarlar
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="security.html" class="sidebar-nav-link">
+              <span class="icon">&#128274;</span>
+              Güvenlik
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">AY</div>
+          <div class="sidebar-user-info">
+            <h4>Ahmet Yilmaz</h4>
+            <span>Süper Admin</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="topbar-menu-btn" onclick="toggleSidebar()">&#9776;</button>
+          <div class="topbar-search">
+            <span class="search-icon">&#128269;</span>
+            <input type="text" placeholder="Ara... (sayfa, kullanici, ürün)">
+            <span class="search-shortcut">Ctrl+K</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-icon-btn">&#128276;</div>
+          <div class="theme-toggle" onclick="toggleTheme()">
+            <div class="theme-toggle-circle">
+              <span id="themeIcon">&#9788;</span>
+            </div>
+          </div>
+          <div class="dropdown">
+            <div class="topbar-user" tabindex="0">
+              <div class="topbar-user-avatar">AY</div>
+              <div>
+                <div class="topbar-user-name">Ahmet Yilmaz</div>
+                <div class="topbar-user-role">Süper Admin</div>
+              </div>
+            </div>
+            <div class="dropdown-menu">
+              <a href="#">&#128100; Profilim</a>
+              <a href="settings.html">&#9881; Ayarlar</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" style="color:var(--danger);">&#10145; Cikis Yap</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="page-wrapper">
+        <!-- Breadcrumb & Header -->
+        <div class="breadcrumb animate-fade">
+          <a href="index.html">Ana Sayfa</a>
+          <span class="separator">&#10095;</span>
+          <span class="current">Ayarlar</span>
+        </div>
+
+        <div class="page-header animate-fade">
+          <h1>Ayarlar</h1>
+          <p>Hesap bilgilerinizi, görünüm tercihlerinizi ve sistem ayarlarini yönetin.</p>
+        </div>
+
+        <!-- Settings Layout -->
+        <div class="settings-layout">
+          <!-- Settings Sidebar Navigation -->
+          <div class="settings-sidebar animate-slide-left">
+            <div class="settings-nav-item active">
+              <span class="s-icon">&#128100;</span>
+              Profil
+            </div>
+            <div class="settings-nav-item">
+              <span class="s-icon">&#127912;</span>
+              Görünüm
+            </div>
+            <div class="settings-nav-item">
+              <span class="s-icon">&#128276;</span>
+              Bildirimler
+            </div>
+            <div class="settings-nav-item">
+              <span class="s-icon">&#128274;</span>
+              Güvenlik
+            </div>
+            <div class="settings-nav-item">
+              <span class="s-icon">&#127760;</span>
+              Dil ve Bölge
+            </div>
+            <div class="settings-nav-item">
+              <span class="s-icon">&#128279;</span>
+              Entegrasyonlar
+            </div>
+            <div class="settings-nav-item" style="color:var(--danger);">
+              <span class="s-icon">&#9888;</span>
+              Tehlikeli Alan
+            </div>
+          </div>
+
+          <!-- Settings Content -->
+          <div class="settings-content">
+
+            <!-- Profile Section -->
+            <div class="settings-section animate-slide-up">
+              <div class="settings-section-header">
+                <h3>&#128100; Profil Bilgileri</h3>
+                <p>Kisisel bilgilerinizi ve profil resminizi güncelleyin.</p>
+              </div>
+              <div class="settings-section-body">
+                <!-- Avatar upload -->
+                <div class="avatar-upload">
+                  <div class="avatar-upload-img">
+                    AY
+                    <div class="avatar-overlay">&#128247;</div>
+                  </div>
+                  <div class="avatar-upload-info">
+                    <h4>Profil Fotografi</h4>
+                    <p>JPG, PNG veya GIF. Maksimum 5MB.</p>
+                    <div class="flex" style="gap:8px;">
+                      <button class="btn btn-sm btn-primary">Yükle</button>
+                      <button class="btn btn-sm btn-ghost">Kaldir</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Ad <span class="required">*</span></label>
+                    <input type="text" class="form-input" value="Ahmet">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Soyad <span class="required">*</span></label>
+                    <input type="text" class="form-input" value="Yilmaz">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">E-posta <span class="required">*</span></label>
+                    <input type="email" class="form-input" value="ahmet@kurumsal.com">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Telefon</label>
+                    <input type="tel" class="form-input" value="+90 532 XXX XX XX">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Unvan</label>
+                  <input type="text" class="form-input" value="Süper Admin - Yazilim Departmani">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Biyografi</label>
+                  <textarea class="form-input" rows="3">10+ yillik tecrübeli yazilim mühendisi. Full-stack gelistirme ve takim yönetimi konularinda uzman.</textarea>
+                </div>
+              </div>
+              <div class="settings-section-footer">
+                <button class="btn btn-secondary">Iptal</button>
+                <button class="btn btn-primary">&#10003; Degisiklikleri Kaydet</button>
+              </div>
+            </div>
+
+            <!-- Appearance Section -->
+            <div class="settings-section animate-slide-up">
+              <div class="settings-section-header">
+                <h3>&#127912; Görünüm Ayarlari</h3>
+                <p>Tema, renk ve yazı tipi tercihlerinizi ayarlayin.</p>
+              </div>
+              <div class="settings-section-body">
+                <!-- Theme selection -->
+                <div class="form-group">
+                  <label class="form-label">Tema Seçimi</label>
+                  <div class="theme-cards">
+                    <div class="theme-card selected" onclick="document.body.classList.remove('dark');document.getElementById('themeIcon').textContent='\u2600';localStorage.setItem('theme','light');">
+                      <div class="theme-card-preview" style="background:linear-gradient(135deg,#f1f5f9,#e2e8f0);border:1px solid #e2e8f0;"></div>
+                      <h4>&#9788; Açik Mod</h4>
+                      <p>Aydinlik ve ferah tasarim</p>
+                    </div>
+                    <div class="theme-card" onclick="document.body.classList.add('dark');document.getElementById('themeIcon').textContent='\u263E';localStorage.setItem('theme','dark');">
+                      <div class="theme-card-preview" style="background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid #334155;"></div>
+                      <h4>&#9790; Koyu Mod</h4>
+                      <p>Göz yormayan karanlik tasarim</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Color palette -->
+                <div class="form-group">
+                  <label class="form-label">Ana Renk</label>
+                  <p class="form-hint mb-2">Panel genelinde kullanilacak vurgu rengini seçin.</p>
+                  <div class="color-options">
+                    <div class="color-option selected" style="background:#6366f1;" title="Indigo">&#10003;</div>
+                    <div class="color-option" style="background:#3b82f6;" title="Mavi">&nbsp;</div>
+                    <div class="color-option" style="background:#06b6d4;" title="Camgöbegi">&nbsp;</div>
+                    <div class="color-option" style="background:#10b981;" title="Yeşil">&nbsp;</div>
+                    <div class="color-option" style="background:#f59e0b;" title="Turuncu">&nbsp;</div>
+                    <div class="color-option" style="background:#ef4444;" title="Kirmizi">&nbsp;</div>
+                    <div class="color-option" style="background:#ec4899;" title="Pembe">&nbsp;</div>
+                    <div class="color-option" style="background:#8b5cf6;" title="Mor">&nbsp;</div>
+                  </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Font size -->
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Yazi Boyutu</label>
+                    <select class="form-select">
+                      <option>Küçük (14px)</option>
+                      <option selected>Normal (16px)</option>
+                      <option>Büyük (18px)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Sidebar Genisligi</label>
+                    <select class="form-select">
+                      <option>Dar (240px)</option>
+                      <option selected>Normal (280px)</option>
+                      <option>Genis (320px)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="settings-section-footer">
+                <button class="btn btn-secondary">Varsayilana Dön</button>
+                <button class="btn btn-primary">&#10003; Kaydet</button>
+              </div>
+            </div>
+
+            <!-- Notifications Section -->
+            <div class="settings-section animate-slide-up">
+              <div class="settings-section-header">
+                <h3>&#128276; Bildirim Tercihleri</h3>
+                <p>Hangi bildirimleri almak istediginizi yönetin.</p>
+              </div>
+              <div class="settings-section-body">
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <h4>E-posta Bildirimleri</h4>
+                    <p>Yeni siparis, kullanici kaydi ve sistem uyarilari için e-posta al.</p>
+                  </div>
+                  <div class="form-switch active"></div>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <h4>Push Bildirimleri</h4>
+                    <p>Tarayici üzerinden anlik bildirimler al.</p>
+                  </div>
+                  <div class="form-switch active"></div>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <h4>SMS Bildirimleri</h4>
+                    <p>Kritik uyarilar için SMS al.</p>
+                  </div>
+                  <div class="form-switch"></div>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <h4>Haftalik Rapor</h4>
+                    <p>Her pazartesi haftalik özet raporu e-posta ile al.</p>
+                  </div>
+                  <div class="form-switch active"></div>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <h4>Pazarlama E-postalari</h4>
+                    <p>Yeni özellikler ve güncellemeler hakkinda bilgi al.</p>
+                  </div>
+                  <div class="form-switch"></div>
+                </div>
+              </div>
+              <div class="settings-section-footer">
+                <button class="btn btn-primary">&#10003; Tercihleri Kaydet</button>
+              </div>
+            </div>
+
+            <!-- Security Section -->
+            <div class="settings-section animate-slide-up">
+              <div class="settings-section-header">
+                <h3>&#128274; Güvenlik Ayarlari</h3>
+                <p>Sifrenizi degistirin ve iki faktörlü dogrulama ayarlayin.</p>
+              </div>
+              <div class="settings-section-body">
+                <div class="form-group">
+                  <label class="form-label">Mevcut Sifre</label>
+                  <input type="password" class="form-input" placeholder="Mevcut sifrenizi girin">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Yeni Sifre</label>
+                    <input type="password" class="form-input" placeholder="Yeni sifre">
+                    <p class="form-hint">En az 8 karakter, büyük/küçük harf ve rakam içermeli.</p>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Sifre Tekrar</label>
+                    <input type="password" class="form-input" placeholder="Yeni sifre tekrar">
+                  </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <h4>Iki Faktörlü Dogrulama (2FA)</h4>
+                    <p>Hesabiniza ek güvenlik katmani ekleyin.</p>
+                  </div>
+                  <div class="form-switch"></div>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <h4>Oturum Zaman Asimi</h4>
+                    <p>Belirlenen süre sonunda otomatik cikis yap.</p>
+                  </div>
+                  <select class="form-select" style="width:160px;">
+                    <option>15 dakika</option>
+                    <option selected>30 dakika</option>
+                    <option>1 saat</option>
+                    <option>4 saat</option>
+                    <option>Hiçbir zaman</option>
+                  </select>
+                </div>
+              </div>
+              <div class="settings-section-footer">
+                <button class="btn btn-secondary">Iptal</button>
+                <button class="btn btn-primary">&#128274; Sifre Degistir</button>
+              </div>
+            </div>
+
+            <!-- Language & Region Section -->
+            <div class="settings-section animate-slide-up">
+              <div class="settings-section-header">
+                <h3>&#127760; Dil ve Bölge</h3>
+                <p>Dil, saat dilimi ve para birimi tercihlerinizi yapin.</p>
+              </div>
+              <div class="settings-section-body">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Dil</label>
+                    <select class="form-select">
+                      <option selected>Türkçe</option>
+                      <option>English</option>
+                      <option>Deutsch</option>
+                      <option>Français</option>
+                      <option>Español</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Saat Dilimi</label>
+                    <select class="form-select">
+                      <option selected>UTC+3 Istanbul</option>
+                      <option>UTC+0 Londra</option>
+                      <option>UTC+1 Berlin</option>
+                      <option>UTC-5 New York</option>
+                      <option>UTC+9 Tokyo</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Para Birimi</label>
+                    <select class="form-select">
+                      <option selected>TRY (&#8378;) - Türk Lirasi</option>
+                      <option>USD ($) - Amerikan Dolari</option>
+                      <option>EUR (&#8364;) - Euro</option>
+                      <option>GBP (&#163;) - Ingiliz Sterlini</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Tarih Formati</label>
+                    <select class="form-select">
+                      <option selected>GG/AA/YYYY</option>
+                      <option>AA/GG/YYYY</option>
+                      <option>YYYY-AA-GG</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="settings-section-footer">
+                <button class="btn btn-primary">&#10003; Kaydet</button>
+              </div>
+            </div>
+
+            <!-- Keyboard Shortcuts -->
+            <div class="settings-section animate-slide-up">
+              <div class="settings-section-header">
+                <h3>&#9000; Klavye Kisayollari</h3>
+                <p>Hizli erisim için klavye kisayollarini ögrenin.</p>
+              </div>
+              <div class="settings-section-body">
+                <div class="shortcut-row">
+                  <span style="font-size:14px;color:var(--text-secondary);">Arama Aç</span>
+                  <div class="shortcut-key">
+                    <span class="key">Ctrl</span>
+                    <span style="color:var(--text-muted);">+</span>
+                    <span class="key">K</span>
+                  </div>
+                </div>
+                <div class="shortcut-row">
+                  <span style="font-size:14px;color:var(--text-secondary);">Tema Degistir</span>
+                  <div class="shortcut-key">
+                    <span class="key">Ctrl</span>
+                    <span style="color:var(--text-muted);">+</span>
+                    <span class="key">Shift</span>
+                    <span style="color:var(--text-muted);">+</span>
+                    <span class="key">D</span>
+                  </div>
+                </div>
+                <div class="shortcut-row">
+                  <span style="font-size:14px;color:var(--text-secondary);">Dashboard</span>
+                  <div class="shortcut-key">
+                    <span class="key">G</span>
+                    <span style="color:var(--text-muted);">sonra</span>
+                    <span class="key">D</span>
+                  </div>
+                </div>
+                <div class="shortcut-row">
+                  <span style="font-size:14px;color:var(--text-secondary);">Kullanicilar</span>
+                  <div class="shortcut-key">
+                    <span class="key">G</span>
+                    <span style="color:var(--text-muted);">sonra</span>
+                    <span class="key">U</span>
+                  </div>
+                </div>
+                <div class="shortcut-row">
+                  <span style="font-size:14px;color:var(--text-secondary);">Ayarlar</span>
+                  <div class="shortcut-key">
+                    <span class="key">G</span>
+                    <span style="color:var(--text-muted);">sonra</span>
+                    <span class="key">S</span>
+                  </div>
+                </div>
+                <div class="shortcut-row">
+                  <span style="font-size:14px;color:var(--text-secondary);">Sidebar Aç/Kapat</span>
+                  <div class="shortcut-key">
+                    <span class="key">Ctrl</span>
+                    <span style="color:var(--text-muted);">+</span>
+                    <span class="key">B</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="settings-section danger-zone animate-slide-up">
+              <div class="settings-section-header">
+                <h3 style="color:var(--danger);">&#9888; Tehlikeli Alan</h3>
+                <p>Bu islemler geri alinamaz. Dikkatli olun.</p>
+              </div>
+              <div class="settings-section-body">
+                <div class="danger-zone-item">
+                  <div>
+                    <h4>Tüm Verileri Sifirla</h4>
+                    <p>Dashboard istatistikleri ve önbellek verilerini sifirla.</p>
+                  </div>
+                  <button class="btn btn-sm btn-danger">Sifirla</button>
+                </div>
+                <div class="danger-zone-item">
+                  <div>
+                    <h4>Hesabi Devre Disi Birak</h4>
+                    <p>Hesabiniz geçici olarak devre disi birakilir.</p>
+                  </div>
+                  <button class="btn btn-sm btn-danger">Devre Disi Birak</button>
+                </div>
+                <div class="danger-zone-item">
+                  <div>
+                    <h4>Hesabi Kalici Olarak Sil</h4>
+                    <p>Tüm verileriniz kalici olarak silinir ve geri alinamaz.</p>
+                  </div>
+                  <button class="btn btn-sm btn-danger">Hesabi Sil</button>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /settings-content -->
+        </div><!-- /settings-layout -->
+
+      </div><!-- /page-wrapper -->
+    </div><!-- /main-content -->
+  </div><!-- /layout -->
+
+  <script src="app.js"></script>
+</body>
+</html>
