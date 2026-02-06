@@ -1,1 +1,730 @@
-<!-- first commit -->
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Kurumsal Admin Panel</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Page-specific styles */
+    .welcome-banner {
+      background: var(--gradient-hero);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      color: #ffffff;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+    .welcome-banner::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+      top: -100px;
+      right: -50px;
+    }
+    .welcome-banner::after {
+      content: '';
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+      bottom: -80px;
+      right: 120px;
+    }
+    .welcome-banner h2 {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      position: relative;
+      z-index: 1;
+    }
+    .welcome-banner p {
+      font-size: 15px;
+      opacity: 0.85;
+      position: relative;
+      z-index: 1;
+    }
+    .welcome-banner .welcome-date {
+      font-size: 13px;
+      opacity: 0.6;
+      margin-top: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Chart area */
+    .chart-container {
+      padding: 20px 0;
+    }
+    .chart-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Recent orders mini table */
+    .order-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .order-product {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .order-id {
+      font-family: monospace;
+      font-size: 13px;
+      color: var(--primary);
+    }
+
+    /* Top products */
+    .product-rank-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .product-rank-item:last-child {
+      border-bottom: none;
+    }
+    .product-rank-num {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .product-rank-num.gold { background: #fef3c7; color: #d97706; }
+    .product-rank-num.silver { background: #f1f5f9; color: #64748b; }
+    .product-rank-num.bronze { background: #ffedd5; color: #ea580c; }
+    .product-rank-num.default { background: var(--bg-input); color: var(--text-muted); }
+    .product-rank-info { flex: 1; }
+    .product-rank-info h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .product-rank-info span {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .product-rank-sales {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* Quick actions */
+    .quick-action {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+      cursor: pointer;
+      text-align: center;
+      background: var(--bg-card);
+    }
+    .quick-action:hover {
+      border-color: var(--primary);
+      background: var(--bg-card-hover);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    .quick-action-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .quick-action h4 {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .quick-action p {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Overlay (Mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="layout">
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">K</div>
+        <div class="sidebar-brand">
+          <h2>KurumsalCo</h2>
+          <span>Admin Panel</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Ana Menü</div>
+          <div class="sidebar-nav-item">
+            <a href="index.html" class="sidebar-nav-link active">
+              <span class="icon">&#9673;</span>
+              Dashboard
+            </a>
+          </div>
+          <div class="sidebar-nav-item sidebar-dropdown open" id="analyticsDropdown">
+            <div class="sidebar-nav-link" onclick="this.parentElement.classList.toggle('open')">
+              <span class="icon">&#9683;</span>
+              Analizler
+              <span class="arrow">&#9662;</span>
+            </div>
+            <div class="sidebar-submenu">
+              <a href="#" class="active">Genel Bakis</a>
+              <a href="#">Trafik Analizi</a>
+              <a href="#">Gelir Raporu</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Yönetim</div>
+          <div class="sidebar-nav-item">
+            <a href="users.html" class="sidebar-nav-link">
+              <span class="icon">&#9787;</span>
+              Kullanicilar
+              <span class="badge">24</span>
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="products.html" class="sidebar-nav-link">
+              <span class="icon">&#9830;</span>
+              Ürünler
+            </a>
+          </div>
+          <div class="sidebar-nav-item sidebar-dropdown" id="ecommerceDropdown">
+            <div class="sidebar-nav-link" onclick="this.parentElement.classList.toggle('open')">
+              <span class="icon">&#9733;</span>
+              E-Ticaret
+              <span class="arrow">&#9662;</span>
+            </div>
+            <div class="sidebar-submenu">
+              <a href="#">Siparisler</a>
+              <a href="#">Kategoriler</a>
+              <a href="#">Kampanyalar</a>
+            </div>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="#" class="sidebar-nav-link">
+              <span class="icon">&#9993;</span>
+              Mesajlar
+              <span class="badge danger">5</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Sistem</div>
+          <div class="sidebar-nav-item">
+            <a href="settings.html" class="sidebar-nav-link">
+              <span class="icon">&#9881;</span>
+              Ayarlar
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="#" class="sidebar-nav-link">
+              <span class="icon">&#9888;</span>
+              Güvenlik
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">AY</div>
+          <div class="sidebar-user-info">
+            <h4>Ahmet Yilmaz</h4>
+            <span>Süper Admin</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="topbar-menu-btn" onclick="toggleSidebar()">&#9776;</button>
+          <div class="topbar-search">
+            <span class="search-icon">&#128269;</span>
+            <input type="text" placeholder="Ara... (sayfa, kullanici, ürün)">
+            <span class="search-shortcut">Ctrl+K</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <!-- Mega Menu -->
+          <div class="mega-menu-wrapper">
+            <div class="topbar-icon-btn" tabindex="0">&#9783;</div>
+            <div class="mega-menu">
+              <a href="index.html" class="mega-menu-item">
+                <div class="mega-icon" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#9673;</div>
+                <h4>Dashboard</h4>
+                <p>Genel bakis ve istatistikler</p>
+              </a>
+              <a href="users.html" class="mega-menu-item">
+                <div class="mega-icon" style="background:rgba(6,182,212,0.1);color:var(--accent);">&#9787;</div>
+                <h4>Kullanicilar</h4>
+                <p>Kullanici yönetimi</p>
+              </a>
+              <a href="products.html" class="mega-menu-item">
+                <div class="mega-icon" style="background:rgba(16,185,129,0.1);color:var(--success);">&#9830;</div>
+                <h4>Ürünler</h4>
+                <p>Ürün katalogu</p>
+              </a>
+              <a href="settings.html" class="mega-menu-item">
+                <div class="mega-icon" style="background:rgba(245,158,11,0.1);color:var(--warning);">&#9881;</div>
+                <h4>Ayarlar</h4>
+                <p>Sistem ayarlari</p>
+              </a>
+              <a href="#" class="mega-menu-item">
+                <div class="mega-icon" style="background:rgba(239,68,68,0.1);color:var(--danger);">&#9993;</div>
+                <h4>Mesajlar</h4>
+                <p>Gelen kutusu</p>
+              </a>
+              <a href="#" class="mega-menu-item">
+                <div class="mega-icon" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#9733;</div>
+                <h4>Raporlar</h4>
+                <p>Detayli raporlar</p>
+              </a>
+            </div>
+          </div>
+
+          <!-- Notifications -->
+          <div class="dropdown">
+            <div class="topbar-icon-btn" tabindex="0">
+              &#128276;
+              <span class="notification-dot"></span>
+            </div>
+            <div class="dropdown-menu" style="width:300px;">
+              <div style="padding:12px 14px; font-weight:700; font-size:15px;">Bildirimler</div>
+              <div class="dropdown-divider"></div>
+              <a href="#">
+                <span style="color:var(--success);font-size:18px;">&#10003;</span>
+                <div>
+                  <div style="font-weight:600;font-size:13px;">Yeni siparis alindi</div>
+                  <div style="font-size:12px;color:var(--text-muted);">2 dakika önce</div>
+                </div>
+              </a>
+              <a href="#">
+                <span style="color:var(--warning);font-size:18px;">&#9888;</span>
+                <div>
+                  <div style="font-weight:600;font-size:13px;">Stok uyarisi</div>
+                  <div style="font-size:12px;color:var(--text-muted);">15 dakika önce</div>
+                </div>
+              </a>
+              <a href="#">
+                <span style="color:var(--info);font-size:18px;">&#9432;</span>
+                <div>
+                  <div style="font-weight:600;font-size:13px;">Sistem güncellendi</div>
+                  <div style="font-size:12px;color:var(--text-muted);">1 saat önce</div>
+                </div>
+              </a>
+              <div class="dropdown-divider"></div>
+              <a href="#" style="justify-content:center;color:var(--primary);font-weight:600;font-size:13px;">
+                Tüm bildirimleri gör
+              </a>
+            </div>
+          </div>
+
+          <!-- Theme Toggle -->
+          <div class="theme-toggle" onclick="toggleTheme()" title="Tema Degistir">
+            <div class="theme-toggle-circle">
+              <span id="themeIcon">&#9788;</span>
+            </div>
+          </div>
+
+          <!-- User -->
+          <div class="dropdown">
+            <div class="topbar-user" tabindex="0">
+              <div class="topbar-user-avatar">AY</div>
+              <div>
+                <div class="topbar-user-name">Ahmet Yilmaz</div>
+                <div class="topbar-user-role">Süper Admin</div>
+              </div>
+            </div>
+            <div class="dropdown-menu">
+              <a href="#">&#128100; Profilim</a>
+              <a href="settings.html">&#9881; Ayarlar</a>
+              <a href="#">&#128172; Mesajlar</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" style="color:var(--danger);">&#10145; Cikis Yap</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="page-wrapper">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner animate-fade">
+          <h2>Hosgeldiniz, Ahmet! &#128075;</h2>
+          <p>Bugün 12 yeni siparis ve 5 yeni kullanici kaydi var.</p>
+          <div class="welcome-date">&#128197; 6 Subat 2026, Cuma</div>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="grid-4 mb-3">
+          <div class="stat-card purple animate-fade stagger-1">
+            <div class="stat-card-top">
+              <div class="stat-card-icon purple">&#128176;</div>
+              <div class="stat-card-trend up">&#8593; 12.5%</div>
+            </div>
+            <h3>&#8378;284,520</h3>
+            <p>Toplam Gelir</p>
+            <div class="stat-progress">
+              <div class="stat-progress-bar purple" style="width: 78%;"></div>
+            </div>
+          </div>
+
+          <div class="stat-card blue animate-fade stagger-2">
+            <div class="stat-card-top">
+              <div class="stat-card-icon blue">&#128179;</div>
+              <div class="stat-card-trend up">&#8593; 8.3%</div>
+            </div>
+            <h3>1,842</h3>
+            <p>Toplam Siparis</p>
+            <div class="stat-progress">
+              <div class="stat-progress-bar blue" style="width: 65%;"></div>
+            </div>
+          </div>
+
+          <div class="stat-card green animate-fade stagger-3">
+            <div class="stat-card-top">
+              <div class="stat-card-icon green">&#128101;</div>
+              <div class="stat-card-trend up">&#8593; 24.1%</div>
+            </div>
+            <h3>3,456</h3>
+            <p>Aktif Kullanicilar</p>
+            <div class="stat-progress">
+              <div class="stat-progress-bar green" style="width: 82%;"></div>
+            </div>
+          </div>
+
+          <div class="stat-card orange animate-fade stagger-4">
+            <div class="stat-card-top">
+              <div class="stat-card-icon orange">&#128200;</div>
+              <div class="stat-card-trend down">&#8595; 3.2%</div>
+            </div>
+            <h3>%67.8</h3>
+            <p>Dönüsüm Orani</p>
+            <div class="stat-progress">
+              <div class="stat-progress-bar orange" style="width: 68%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart + Activity -->
+        <div class="grid-2-1 mb-3">
+          <!-- Bar Chart -->
+          <div class="card animate-slide-up">
+            <div class="card-header">
+              <h3>Gelir Analizi</h3>
+              <div class="flex items-center" style="gap:8px;">
+                <span class="badge badge-primary">Bu Ay</span>
+                <span class="badge" style="background:var(--bg-input);color:var(--text-muted);">Gecen Ay</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container">
+                <div class="chart-bars">
+                  <div class="chart-bar purple" style="height: 55%;"></div>
+                  <div class="chart-bar blue" style="height: 72%;"></div>
+                  <div class="chart-bar purple" style="height: 45%;"></div>
+                  <div class="chart-bar green" style="height: 88%;"></div>
+                  <div class="chart-bar blue" style="height: 62%;"></div>
+                  <div class="chart-bar purple" style="height: 95%;"></div>
+                  <div class="chart-bar orange" style="height: 78%;"></div>
+                  <div class="chart-bar green" style="height: 68%;"></div>
+                  <div class="chart-bar purple" style="height: 82%;"></div>
+                  <div class="chart-bar blue" style="height: 55%;"></div>
+                  <div class="chart-bar green" style="height: 92%;"></div>
+                  <div class="chart-bar purple" style="height: 75%;"></div>
+                </div>
+                <div class="chart-labels">
+                  <span>Oca</span><span>Sub</span><span>Mar</span><span>Nis</span>
+                  <span>May</span><span>Haz</span><span>Tem</span><span>Agu</span>
+                  <span>Eyl</span><span>Eki</span><span>Kas</span><span>Ara</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="card animate-slide-up">
+            <div class="card-header">
+              <h3>Son Aktiviteler</h3>
+              <a href="#" class="btn btn-ghost btn-sm">Tümünü Gör</a>
+            </div>
+            <div class="card-body" style="padding-top:8px;">
+              <div class="activity-list">
+                <div class="activity-item">
+                  <div class="activity-dot" style="background:var(--success);"></div>
+                  <div class="activity-content">
+                    <h4>Yeni siparis</h4>
+                    <p>Mehmet D. &#8378;1,250 degerinde siparis verdi</p>
+                  </div>
+                  <span class="activity-time">2dk</span>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot" style="background:var(--primary);"></div>
+                  <div class="activity-content">
+                    <h4>Yeni kullanici</h4>
+                    <p>Zeynep K. kayit oldu</p>
+                  </div>
+                  <span class="activity-time">15dk</span>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot" style="background:var(--warning);"></div>
+                  <div class="activity-content">
+                    <h4>Stok uyarisi</h4>
+                    <p>Ürün #4521 stok azaliyor</p>
+                  </div>
+                  <span class="activity-time">1sa</span>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot" style="background:var(--accent);"></div>
+                  <div class="activity-content">
+                    <h4>Ödeme alindi</h4>
+                    <p>Siparis #8832 ödendi</p>
+                  </div>
+                  <span class="activity-time">2sa</span>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot" style="background:var(--danger);"></div>
+                  <div class="activity-content">
+                    <h4>Iade talebi</h4>
+                    <p>Siparis #7210 iade edildi</p>
+                  </div>
+                  <span class="activity-time">4sa</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="mb-3">
+          <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Hizli Islemler</h3>
+          <div class="grid-4">
+            <div class="quick-action animate-scale stagger-1">
+              <div class="quick-action-icon" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#10010;</div>
+              <h4>Yeni Ürün</h4>
+              <p>Ürün katalogu ekle</p>
+            </div>
+            <div class="quick-action animate-scale stagger-2">
+              <div class="quick-action-icon" style="background:rgba(6,182,212,0.1);color:var(--accent);">&#128100;</div>
+              <h4>Kullanici Ekle</h4>
+              <p>Yeni kullanici olustur</p>
+            </div>
+            <div class="quick-action animate-scale stagger-3">
+              <div class="quick-action-icon" style="background:rgba(16,185,129,0.1);color:var(--success);">&#128196;</div>
+              <h4>Rapor Olustur</h4>
+              <p>PDF/Excel rapor</p>
+            </div>
+            <div class="quick-action animate-scale stagger-4">
+              <div class="quick-action-icon" style="background:rgba(245,158,11,0.1);color:var(--warning);">&#128231;</div>
+              <h4>Toplu E-posta</h4>
+              <p>Kampanya gönder</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Orders + Top Products -->
+        <div class="grid-2 mb-3">
+          <!-- Recent Orders -->
+          <div class="card animate-slide-up">
+            <div class="card-header">
+              <h3>Son Siparisler</h3>
+              <a href="#" class="btn btn-sm btn-secondary">Tümü &#8594;</a>
+            </div>
+            <div class="table-wrapper">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Siparis</th>
+                    <th>Müsteri</th>
+                    <th>Tutar</th>
+                    <th>Durum</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="order-id">#ORD-8847</td>
+                    <td>
+                      <div class="order-user">
+                        <div class="avatar" style="background:var(--gradient-primary);width:32px;height:32px;font-size:12px;">MD</div>
+                        Mehmet D.
+                      </div>
+                    </td>
+                    <td class="order-product">&#8378;1,250</td>
+                    <td><span class="badge badge-success">&#10003; Tamamlandi</span></td>
+                  </tr>
+                  <tr>
+                    <td class="order-id">#ORD-8846</td>
+                    <td>
+                      <div class="order-user">
+                        <div class="avatar" style="background:var(--gradient-accent);width:32px;height:32px;font-size:12px;">EK</div>
+                        Elif K.
+                      </div>
+                    </td>
+                    <td class="order-product">&#8378;890</td>
+                    <td><span class="badge badge-warning">&#9203; Bekliyor</span></td>
+                  </tr>
+                  <tr>
+                    <td class="order-id">#ORD-8845</td>
+                    <td>
+                      <div class="order-user">
+                        <div class="avatar" style="background:var(--gradient-success);width:32px;height:32px;font-size:12px;">AO</div>
+                        Ali O.
+                      </div>
+                    </td>
+                    <td class="order-product">&#8378;2,340</td>
+                    <td><span class="badge badge-info">&#128666; Kargoda</span></td>
+                  </tr>
+                  <tr>
+                    <td class="order-id">#ORD-8844</td>
+                    <td>
+                      <div class="order-user">
+                        <div class="avatar" style="background:var(--gradient-warm);width:32px;height:32px;font-size:12px;">SB</div>
+                        Selin B.
+                      </div>
+                    </td>
+                    <td class="order-product">&#8378;560</td>
+                    <td><span class="badge badge-danger">&#10005; Iptal</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Top Products -->
+          <div class="card animate-slide-up">
+            <div class="card-header">
+              <h3>En Çok Satan Ürünler</h3>
+              <a href="products.html" class="btn btn-sm btn-secondary">Tümü &#8594;</a>
+            </div>
+            <div class="card-body" style="padding-top:8px;">
+              <div class="product-rank-item">
+                <div class="product-rank-num gold">1</div>
+                <div class="product-rank-info">
+                  <h4>Wireless Kulaklik Pro</h4>
+                  <span>Elektronik</span>
+                </div>
+                <div class="product-rank-sales">842 adet</div>
+              </div>
+              <div class="product-rank-item">
+                <div class="product-rank-num silver">2</div>
+                <div class="product-rank-info">
+                  <h4>Akilli Saat Ultra</h4>
+                  <span>Elektronik</span>
+                </div>
+                <div class="product-rank-sales">654 adet</div>
+              </div>
+              <div class="product-rank-item">
+                <div class="product-rank-num bronze">3</div>
+                <div class="product-rank-info">
+                  <h4>Ergonomik Ofis Sandalyesi</h4>
+                  <span>Mobilya</span>
+                </div>
+                <div class="product-rank-sales">523 adet</div>
+              </div>
+              <div class="product-rank-item">
+                <div class="product-rank-num default">4</div>
+                <div class="product-rank-info">
+                  <h4>Mekanik Klavye RGB</h4>
+                  <span>Aksesuar</span>
+                </div>
+                <div class="product-rank-sales">487 adet</div>
+              </div>
+              <div class="product-rank-item">
+                <div class="product-rank-num default">5</div>
+                <div class="product-rank-info">
+                  <h4>4K Monitor 27"</h4>
+                  <span>Elektronik</span>
+                </div>
+                <div class="product-rank-sales">412 adet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alerts Section -->
+        <div class="mb-3">
+          <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Sistem Bildirimleri</h3>
+          <div class="alert alert-success animate-fade">
+            <span style="font-size:20px;">&#10003;</span>
+            <div><strong>Yedekleme tamamlandi.</strong> Tüm veriler basariyla yedeklendi - 6 Subat 2026, 03:00</div>
+          </div>
+          <div class="alert alert-warning animate-fade">
+            <span style="font-size:20px;">&#9888;</span>
+            <div><strong>Disk alani uyarisi.</strong> Sunucu disk kullanimi %82'ye ulasti.</div>
+          </div>
+          <div class="alert alert-info animate-fade">
+            <span style="font-size:20px;">&#9432;</span>
+            <div><strong>Güncelleme mevcut.</strong> Sistem v3.2.1 sürümüne güncellenebilir.</div>
+          </div>
+        </div>
+
+      </div><!-- /page-wrapper -->
+    </div><!-- /main-content -->
+  </div><!-- /layout -->
+
+  <script>
+    // Theme Toggle
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const icon = document.getElementById('themeIcon');
+      icon.textContent = document.body.classList.contains('dark') ? '\u263E' : '\u2600';
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    // Load saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+      document.getElementById('themeIcon').textContent = '\u263E';
+    }
+
+    // Mobile sidebar toggle
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('mobile-open');
+      overlay.classList.toggle('active');
+    }
+
+    document.getElementById('sidebarOverlay').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.remove('mobile-open');
+      this.classList.remove('active');
+    });
+  </script>
+</body>
+</html>

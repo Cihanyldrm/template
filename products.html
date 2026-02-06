@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ürün Yönetimi - Kurumsal Admin Panel</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Product cards grid view */
+    .view-toggle {
+      display: flex;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .view-toggle-btn {
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      color: var(--text-muted);
+      font-size: 16px;
+      background: var(--bg-card);
+    }
+    .view-toggle-btn:hover {
+      color: var(--primary);
+    }
+    .view-toggle-btn.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* Product Card */
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary-light);
+    }
+    .product-card-img {
+      height: 200px;
+      position: relative;
+      overflow: hidden;
+    }
+    .product-card-img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: rgba(255,255,255,0.8);
+    }
+    .product-card-img .product-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .product-card-img .product-actions {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      opacity: 0;
+      transform: translateX(10px);
+      transition: var(--transition);
+    }
+    .product-card:hover .product-actions {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .product-actions .p-action {
+      width: 34px;
+      height: 34px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      font-size: 14px;
+      box-shadow: var(--shadow-md);
+      color: var(--text-secondary);
+    }
+    .product-actions .p-action:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+    .product-card-body {
+      padding: 18px;
+    }
+    .product-card-category {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .product-card-body h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+    .product-card-body p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .product-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .product-price {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .product-price .old-price {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-decoration: line-through;
+      font-weight: 400;
+      margin-left: 6px;
+    }
+    .product-stock {
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .product-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      color: var(--warning);
+      margin-bottom: 10px;
+    }
+    .product-rating span {
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
+
+    /* Product filter toolbar */
+    .product-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .product-filters {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .product-filters .form-input {
+      width: 260px;
+      height: 40px;
+      font-size: 13px;
+    }
+    .product-filters .form-select {
+      width: 160px;
+      height: 40px;
+      font-size: 13px;
+    }
+
+    /* Category pills */
+    .category-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .category-pill {
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .category-pill:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .category-pill.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px var(--primary-glow);
+    }
+
+    /* Table view */
+    .product-img-small {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .product-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .product-cell h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .product-cell span {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+      .product-filters .form-input {
+        width: 100%;
+      }
+      .product-filters .form-select {
+        width: 100%;
+      }
+      .product-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Overlay (Mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="layout">
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">K</div>
+        <div class="sidebar-brand">
+          <h2>KurumsalCo</h2>
+          <span>Admin Panel</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Ana Menü</div>
+          <div class="sidebar-nav-item">
+            <a href="index.html" class="sidebar-nav-link">
+              <span class="icon">&#9673;</span>
+              Dashboard
+            </a>
+          </div>
+          <div class="sidebar-nav-item sidebar-dropdown">
+            <div class="sidebar-nav-link" onclick="this.parentElement.classList.toggle('open')">
+              <span class="icon">&#9683;</span>
+              Analizler
+              <span class="arrow">&#9662;</span>
+            </div>
+            <div class="sidebar-submenu">
+              <a href="#">Genel Bakis</a>
+              <a href="#">Trafik Analizi</a>
+              <a href="#">Gelir Raporu</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Yönetim</div>
+          <div class="sidebar-nav-item">
+            <a href="users.html" class="sidebar-nav-link">
+              <span class="icon">&#9787;</span>
+              Kullanicilar
+              <span class="badge">24</span>
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="products.html" class="sidebar-nav-link active">
+              <span class="icon">&#9830;</span>
+              Ürünler
+            </a>
+          </div>
+          <div class="sidebar-nav-item sidebar-dropdown">
+            <div class="sidebar-nav-link" onclick="this.parentElement.classList.toggle('open')">
+              <span class="icon">&#9733;</span>
+              E-Ticaret
+              <span class="arrow">&#9662;</span>
+            </div>
+            <div class="sidebar-submenu">
+              <a href="#">Siparisler</a>
+              <a href="#">Kategoriler</a>
+              <a href="#">Kampanyalar</a>
+            </div>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="#" class="sidebar-nav-link">
+              <span class="icon">&#9993;</span>
+              Mesajlar
+              <span class="badge danger">5</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Sistem</div>
+          <div class="sidebar-nav-item">
+            <a href="settings.html" class="sidebar-nav-link">
+              <span class="icon">&#9881;</span>
+              Ayarlar
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="#" class="sidebar-nav-link">
+              <span class="icon">&#9888;</span>
+              Güvenlik
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">AY</div>
+          <div class="sidebar-user-info">
+            <h4>Ahmet Yilmaz</h4>
+            <span>Süper Admin</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="topbar-menu-btn" onclick="toggleSidebar()">&#9776;</button>
+          <div class="topbar-search">
+            <span class="search-icon">&#128269;</span>
+            <input type="text" placeholder="Ara... (sayfa, kullanici, ürün)">
+            <span class="search-shortcut">Ctrl+K</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-icon-btn">&#128276;</div>
+          <div class="theme-toggle" onclick="toggleTheme()">
+            <div class="theme-toggle-circle">
+              <span id="themeIcon">&#9788;</span>
+            </div>
+          </div>
+          <div class="dropdown">
+            <div class="topbar-user" tabindex="0">
+              <div class="topbar-user-avatar">AY</div>
+              <div>
+                <div class="topbar-user-name">Ahmet Yilmaz</div>
+                <div class="topbar-user-role">Süper Admin</div>
+              </div>
+            </div>
+            <div class="dropdown-menu">
+              <a href="#">&#128100; Profilim</a>
+              <a href="settings.html">&#9881; Ayarlar</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" style="color:var(--danger);">&#10145; Cikis Yap</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="page-wrapper">
+        <!-- Breadcrumb & Header -->
+        <div class="breadcrumb animate-fade">
+          <a href="index.html">Ana Sayfa</a>
+          <span class="separator">&#10095;</span>
+          <span class="current">Ürün Yönetimi</span>
+        </div>
+
+        <div class="page-header animate-fade">
+          <div class="page-header-row">
+            <div>
+              <h1>Ürün Katalogu</h1>
+              <p>Ürünlerinizi yönetin, düzenleyin ve yeni ürünler ekleyin.</p>
+            </div>
+            <div class="flex" style="gap:10px;">
+              <button class="btn btn-primary">&#10010; Yeni Ürün Ekle</button>
+              <button class="btn btn-secondary">&#128229; Disari Aktar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category Pills -->
+        <div class="category-pills animate-fade">
+          <div class="category-pill active">Tümü (128)</div>
+          <div class="category-pill">Elektronik (42)</div>
+          <div class="category-pill">Mobilya (28)</div>
+          <div class="category-pill">Giyim (35)</div>
+          <div class="category-pill">Aksesuar (23)</div>
+          <div class="category-pill">Spor (18)</div>
+          <div class="category-pill">Kitap (12)</div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="product-toolbar animate-fade">
+          <div class="product-filters">
+            <input type="text" class="form-input" placeholder="&#128269; Ürün ara...">
+            <select class="form-select">
+              <option>Fiyata Göre</option>
+              <option>En Düsükten</option>
+              <option>En Yüksekten</option>
+            </select>
+            <select class="form-select">
+              <option>Stok Durumu</option>
+              <option>Stokta Var</option>
+              <option>Stok Az</option>
+              <option>Tükendi</option>
+            </select>
+          </div>
+          <div class="flex items-center" style="gap:12px;">
+            <span style="font-size:13px;color:var(--text-muted);">128 ürün</span>
+            <div class="view-toggle">
+              <div class="view-toggle-btn active" title="Grid Görünüm">&#9638;</div>
+              <div class="view-toggle-btn" title="Liste Görünüm">&#9776;</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Cards Grid -->
+        <div class="grid-3 mb-3">
+          <!-- Product 1 -->
+          <div class="product-card animate-scale stagger-1">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">
+              <div class="product-card-img-placeholder">&#127911;</div>
+              <div class="product-badge" style="background:var(--success);color:#fff;">Yeni</div>
+              <div class="product-actions">
+                <div class="p-action" title="Düzenle">&#9998;</div>
+                <div class="p-action" title="Görüntüle">&#128065;</div>
+                <div class="p-action" title="Sil">&#128465;</div>
+              </div>
+            </div>
+            <div class="product-card-body">
+              <div class="product-card-category">Elektronik</div>
+              <h3>Wireless Kulaklik Pro</h3>
+              <div class="product-rating">&#9733;&#9733;&#9733;&#9733;&#9733; <span>(128)</span></div>
+              <p>Yüksek kaliteli ses deneyimi sunan kablosuz kulaklik. Aktif gürültü engelleme özelligi.</p>
+              <div class="product-card-footer">
+                <div class="product-price">
+                  &#8378;1,299
+                  <span class="old-price">&#8378;1,599</span>
+                </div>
+                <span class="product-stock badge badge-success">Stokta</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 2 -->
+          <div class="product-card animate-scale stagger-2">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#06b6d4,#3b82f6);">
+              <div class="product-card-img-placeholder">&#9201;</div>
+              <div class="product-badge" style="background:var(--danger);color:#fff;">%20 Indirim</div>
+              <div class="product-actions">
+                <div class="p-action" title="Düzenle">&#9998;</div>
+                <div class="p-action" title="Görüntüle">&#128065;</div>
+                <div class="p-action" title="Sil">&#128465;</div>
+              </div>
+            </div>
+            <div class="product-card-body">
+              <div class="product-card-category">Elektronik</div>
+              <h3>Akilli Saat Ultra</h3>
+              <div class="product-rating">&#9733;&#9733;&#9733;&#9733;&#9734; <span>(87)</span></div>
+              <p>GPS, nabiz ölçer, uyku takibi ve 7 gün pil ömrü ile akilli saat deneyimi.</p>
+              <div class="product-card-footer">
+                <div class="product-price">
+                  &#8378;2,499
+                  <span class="old-price">&#8378;3,099</span>
+                </div>
+                <span class="product-stock badge badge-success">Stokta</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 3 -->
+          <div class="product-card animate-scale stagger-3">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#10b981,#059669);">
+              <div class="product-card-img-placeholder">&#128186;</div>
+              <div class="product-actions">
+                <div class="p-action" title="Düzenle">&#9998;</div>
+                <div class="p-action" title="Görüntüle">&#128065;</div>
+                <div class="p-action" title="Sil">&#128465;</div>
+              </div>
+            </div>
+            <div class="product-card-body">
+              <div class="product-card-category">Mobilya</div>
+              <h3>Ergonomik Ofis Sandalyesi</h3>
+              <div class="product-rating">&#9733;&#9733;&#9733;&#9733;&#9733; <span>(256)</span></div>
+              <p>Bel destegi, ayarlanabilir kol dayanagi ve nefes alan kumas ile konfor.</p>
+              <div class="product-card-footer">
+                <div class="product-price">&#8378;4,750</div>
+                <span class="product-stock badge badge-warning">Son 5 Adet</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 4 -->
+          <div class="product-card animate-scale stagger-1">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">
+              <div class="product-card-img-placeholder">&#9000;</div>
+              <div class="product-badge" style="background:var(--primary);color:#fff;">Popüler</div>
+              <div class="product-actions">
+                <div class="p-action" title="Düzenle">&#9998;</div>
+                <div class="p-action" title="Görüntüle">&#128065;</div>
+                <div class="p-action" title="Sil">&#128465;</div>
+              </div>
+            </div>
+            <div class="product-card-body">
+              <div class="product-card-category">Aksesuar</div>
+              <h3>Mekanik Klavye RGB</h3>
+              <div class="product-rating">&#9733;&#9733;&#9733;&#9733;&#9734; <span>(94)</span></div>
+              <p>Cherry MX switch, tam RGB aydinlatma, makro tuslari ve USB-C baglanti.</p>
+              <div class="product-card-footer">
+                <div class="product-price">&#8378;1,899</div>
+                <span class="product-stock badge badge-success">Stokta</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 5 -->
+          <div class="product-card animate-scale stagger-2">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);">
+              <div class="product-card-img-placeholder">&#128187;</div>
+              <div class="product-actions">
+                <div class="p-action" title="Düzenle">&#9998;</div>
+                <div class="p-action" title="Görüntüle">&#128065;</div>
+                <div class="p-action" title="Sil">&#128465;</div>
+              </div>
+            </div>
+            <div class="product-card-body">
+              <div class="product-card-category">Elektronik</div>
+              <h3>4K Monitor 27"</h3>
+              <div class="product-rating">&#9733;&#9733;&#9733;&#9733;&#9733; <span>(312)</span></div>
+              <p>IPS panel, HDR400, %99 sRGB renk dogrulugu, USB-C DisplayPort.</p>
+              <div class="product-card-footer">
+                <div class="product-price">
+                  &#8378;8,990
+                  <span class="old-price">&#8378;9,990</span>
+                </div>
+                <span class="product-stock badge badge-success">Stokta</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 6 -->
+          <div class="product-card animate-scale stagger-3">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#64748b,#475569);">
+              <div class="product-card-img-placeholder">&#127939;</div>
+              <div class="product-badge" style="background:var(--danger);color:#fff;">Tükendi</div>
+              <div class="product-actions">
+                <div class="p-action" title="Düzenle">&#9998;</div>
+                <div class="p-action" title="Görüntüle">&#128065;</div>
+                <div class="p-action" title="Sil">&#128465;</div>
+              </div>
+            </div>
+            <div class="product-card-body">
+              <div class="product-card-category">Spor</div>
+              <h3>Profesyonel Kosu Ayakkabisi</h3>
+              <div class="product-rating">&#9733;&#9733;&#9733;&#9733;&#9734; <span>(67)</span></div>
+              <p>Hafif taban, nefes alan üst yüzey ve darbe emici teknoloji ile spor deneyimi.</p>
+              <div class="product-card-footer">
+                <div class="product-price">&#8378;2,150</div>
+                <span class="product-stock badge badge-danger">Tükendi</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Table View -->
+        <div class="card animate-slide-up mb-3">
+          <div class="card-header">
+            <h3>Ürün Listesi (Tablo Görünümü)</h3>
+            <button class="btn btn-sm btn-secondary">&#128229; CSV Indir</button>
+          </div>
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" class="table-check" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;"></th>
+                  <th>Ürün</th>
+                  <th>Kategori</th>
+                  <th>Fiyat</th>
+                  <th>Stok</th>
+                  <th>Puan</th>
+                  <th>Durum</th>
+                  <th>Islem</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox" class="table-check" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;"></td>
+                  <td>
+                    <div class="product-cell">
+                      <div class="product-img-small" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">&#127911;</div>
+                      <div>
+                        <h4>Wireless Kulaklik Pro</h4>
+                        <span>SKU: WKP-001</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-primary">Elektronik</span></td>
+                  <td style="font-weight:700;color:var(--text-primary);">&#8378;1,299</td>
+                  <td>342</td>
+                  <td style="color:var(--warning);">&#9733; 4.9</td>
+                  <td><span class="badge badge-success">Aktif</span></td>
+                  <td>
+                    <div class="action-btns" style="display:flex;gap:6px;">
+                      <div class="action-btn" title="Düzenle" style="width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s ease;font-size:14px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-secondary);">&#9998;</div>
+                      <div class="action-btn danger" title="Sil" style="width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s ease;font-size:14px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-secondary);">&#128465;</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="table-check" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;"></td>
+                  <td>
+                    <div class="product-cell">
+                      <div class="product-img-small" style="background:linear-gradient(135deg,#06b6d4,#3b82f6);">&#9201;</div>
+                      <div>
+                        <h4>Akilli Saat Ultra</h4>
+                        <span>SKU: ASU-002</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-primary">Elektronik</span></td>
+                  <td style="font-weight:700;color:var(--text-primary);">&#8378;2,499</td>
+                  <td>128</td>
+                  <td style="color:var(--warning);">&#9733; 4.5</td>
+                  <td><span class="badge badge-success">Aktif</span></td>
+                  <td>
+                    <div class="action-btns" style="display:flex;gap:6px;">
+                      <div class="action-btn" title="Düzenle" style="width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s ease;font-size:14px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-secondary);">&#9998;</div>
+                      <div class="action-btn danger" title="Sil" style="width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s ease;font-size:14px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-secondary);">&#128465;</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="table-check" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;"></td>
+                  <td>
+                    <div class="product-cell">
+                      <div class="product-img-small" style="background:linear-gradient(135deg,#10b981,#059669);">&#128186;</div>
+                      <div>
+                        <h4>Ergonomik Ofis Sandalyesi</h4>
+                        <span>SKU: EOS-003</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-info">Mobilya</span></td>
+                  <td style="font-weight:700;color:var(--text-primary);">&#8378;4,750</td>
+                  <td style="color:var(--warning);font-weight:600;">5</td>
+                  <td style="color:var(--warning);">&#9733; 4.8</td>
+                  <td><span class="badge badge-warning">Stok Az</span></td>
+                  <td>
+                    <div class="action-btns" style="display:flex;gap:6px;">
+                      <div class="action-btn" title="Düzenle" style="width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s ease;font-size:14px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-secondary);">&#9998;</div>
+                      <div class="action-btn danger" title="Sil" style="width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s ease;font-size:14px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-secondary);">&#128465;</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="table-check" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;"></td>
+                  <td>
+                    <div class="product-cell">
+                      <div class="product-img-small" style="background:linear-gradient(135deg,#64748b,#475569);">&#127939;</div>
+                      <div>
+                        <h4>Profesyonel Kosu Ayakkabisi</h4>
+                        <span>SKU: PKA-006</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-warning">Spor</span></td>
+                  <td style="font-weight:700;color:var(--text-primary);">&#8378;2,150</td>
+                  <td style="color:var(--danger);font-weight:600;">0</td>
+                  <td style="color:var(--warning);">&#9733; 4.3</td>
+                  <td><span class="badge badge-danger">Tükendi</span></td>
+                  <td>
+                    <div class="action-btns" style="display:flex;gap:6px;">
+                      <div class="action-btn" title="Düzenle" style="width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s ease;font-size:14px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-secondary);">&#9998;</div>
+                      <div class="action-btn danger" title="Sil" style="width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s ease;font-size:14px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-secondary);">&#128465;</div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-top:1px solid var(--border-color);flex-wrap:wrap;gap:12px;">
+            <div style="font-size:13px;color:var(--text-muted);">
+              Toplam <strong>128</strong> üründen <strong>1-6</strong> arasi gösteriliyor
+            </div>
+            <div class="pagination">
+              <div class="pagination-btn disabled">&#8592;</div>
+              <div class="pagination-btn active">1</div>
+              <div class="pagination-btn">2</div>
+              <div class="pagination-btn">3</div>
+              <div class="pagination-btn">...</div>
+              <div class="pagination-btn">22</div>
+              <div class="pagination-btn">&#8594;</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /page-wrapper -->
+    </div><!-- /main-content -->
+  </div><!-- /layout -->
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const icon = document.getElementById('themeIcon');
+      icon.textContent = document.body.classList.contains('dark') ? '\u263E' : '\u2600';
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+      document.getElementById('themeIcon').textContent = '\u263E';
+    }
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('mobile-open');
+      overlay.classList.toggle('active');
+    }
+    document.getElementById('sidebarOverlay').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.remove('mobile-open');
+      this.classList.remove('active');
+    });
+  </script>
+</body>
+</html>
