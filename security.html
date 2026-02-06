@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Güvenlik ve Erisim Kontrolü - Kurumsal Admin Panel</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* =============================================
+       SECURITY PAGE - SPECIFIC STYLES
+       ============================================= */
+
+    /* ---- Security Score Hero ---- */
+    .sec-hero {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+    .sec-hero::before {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+      top: -200px; right: -100px;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    body.dark .sec-hero::before { opacity: 0.3; }
+    .sec-score-ring {
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+    .sec-score-inner {
+      width: 100px; height: 100px;
+      background: var(--bg-card);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      transition: background 0.4s ease;
+    }
+    .sec-score-inner .score-num {
+      font-size: 32px; font-weight: 800;
+      color: var(--text-primary); letter-spacing: -1px;
+    }
+    .sec-score-inner .score-label {
+      font-size: 11px; color: var(--text-muted);
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .sec-hero-info { flex: 1; z-index: 1; }
+    .sec-hero-info h2 {
+      font-size: 22px; font-weight: 800; margin-bottom: 6px;
+    }
+    .sec-hero-info p {
+      font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6;
+    }
+    .sec-hero-checks {
+      display: flex; gap: 20px; flex-wrap: wrap;
+    }
+    .sec-check {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 600;
+    }
+    .sec-check-icon {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+    }
+    .sec-check-icon.pass { background: var(--success-light); color: var(--success); }
+    .sec-check-icon.fail { background: var(--danger-light); color: var(--danger); }
+    .sec-check-icon.warn { background: var(--warning-light); color: var(--warning); }
+
+    /* ---- Stat Cards ---- */
+    .sec-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .sec-stat {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .sec-stat::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      opacity: 0; transition: var(--transition);
+    }
+    .sec-stat:hover { transform: translateY(-3px); box-shadow: var(--shadow-xl); }
+    .sec-stat:hover::after { opacity: 1; }
+    .sec-stat:nth-child(1)::after { background: var(--gradient-primary); }
+    .sec-stat:nth-child(2)::after { background: var(--gradient-success); }
+    .sec-stat:nth-child(3)::after { background: var(--gradient-warm); }
+    .sec-stat:nth-child(4)::after { background: var(--gradient-accent); }
+    .sec-stat-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .sec-stat-icon {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .sec-stat h3 {
+      font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px;
+    }
+    .sec-stat p { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+
+    /* ---- Roles Section ---- */
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .role-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+    .role-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 4px; height: 100%;
+      border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+      transition: var(--transition);
+    }
+    .role-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+    }
+    .role-card.super-admin::before { background: var(--gradient-primary); }
+    .role-card.admin::before       { background: var(--gradient-accent); }
+    .role-card.editor::before      { background: var(--gradient-success); }
+    .role-card.moderator::before   { background: var(--gradient-warm); }
+    .role-card.user::before        { background: linear-gradient(135deg,#64748b,#475569); }
+    .role-card.viewer::before      { background: linear-gradient(135deg,#ec4899,#8b5cf6); }
+
+    .role-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .role-card-icon {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .role-card-header h3 {
+      font-size: 16px; font-weight: 700; margin-bottom: 2px;
+    }
+    .role-card-header span {
+      font-size: 12px; color: var(--text-muted);
+    }
+    .role-card-perms {
+      display: flex; flex-direction: column; gap: 8px;
+      margin-bottom: 18px;
+    }
+    .role-perm {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: var(--text-secondary);
+    }
+    .role-perm .perm-dot {
+      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    }
+    .role-perm .perm-dot.on  { background: var(--success); }
+    .role-perm .perm-dot.off { background: var(--text-muted); opacity: 0.4; }
+    .role-perm.disabled { opacity: 0.45; text-decoration: line-through; }
+    .role-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+    }
+    .role-user-count {
+      font-size: 13px; color: var(--text-muted); font-weight: 500;
+    }
+
+    /* ---- Permissions Matrix Table ---- */
+    .perm-matrix { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .perm-matrix th {
+      padding: 14px 16px;
+      text-align: center;
+      font-size: 12px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: var(--text-muted);
+      background: var(--bg-input);
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+      position: sticky; top: 0; z-index: 2;
+    }
+    .perm-matrix th:first-child { text-align: left; min-width: 200px; }
+    .perm-matrix td {
+      padding: 14px 16px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+      transition: var(--transition-fast);
+    }
+    .perm-matrix td:first-child {
+      text-align: left; font-weight: 600; color: var(--text-primary);
+    }
+    .perm-matrix tbody tr { transition: var(--transition-fast); }
+    .perm-matrix tbody tr:hover { background: var(--bg-card-hover); }
+    .perm-matrix tbody tr:last-child td { border-bottom: none; }
+
+    /* Toggle inside table */
+    .perm-toggle {
+      width: 38px; height: 22px;
+      border-radius: var(--radius-full);
+      background: var(--border-color);
+      cursor: pointer;
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+      transition: var(--transition);
+    }
+    .perm-toggle.on { background: var(--success); }
+    .perm-toggle::after {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      top: 3px; left: 3px;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+    .perm-toggle.on::after { transform: translateX(16px); }
+    .perm-toggle:hover { opacity: 0.85; }
+
+    /* Shield icon in matrix */
+    .perm-shield {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px; height: 28px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+    }
+    .perm-shield.granted {
+      background: var(--success-light); color: var(--success);
+    }
+    .perm-shield.denied {
+      background: var(--bg-input); color: var(--text-muted); opacity: 0.5;
+    }
+
+    /* ---- Session / Login Table ---- */
+    .session-device {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .session-device-icon {
+      width: 40px; height: 40px;
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .session-device-info h4 {
+      font-size: 14px; font-weight: 600; color: var(--text-primary);
+    }
+    .session-device-info span {
+      font-size: 12px; color: var(--text-muted);
+    }
+    .session-current {
+      font-size: 11px; font-weight: 700; color: var(--success);
+      background: var(--success-light);
+      padding: 2px 10px; border-radius: var(--radius-full);
+    }
+
+    /* ---- Security Settings Rows ---- */
+    .sec-setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border-color);
+      gap: 16px;
+    }
+    .sec-setting-row:last-child { border-bottom: none; }
+    .sec-setting-info { flex: 1; }
+    .sec-setting-info h4 {
+      font-size: 14px; font-weight: 600; margin-bottom: 3px;
+    }
+    .sec-setting-info p {
+      font-size: 13px; color: var(--text-muted); line-height: 1.5;
+    }
+    .sec-setting-action {
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+
+    /* ---- Activity Log Timeline ---- */
+    .timeline {
+      position: relative;
+      padding-left: 28px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 9px; top: 6px; bottom: 6px;
+      width: 2px;
+      background: var(--border-color);
+      border-radius: 1px;
+    }
+    .timeline-item {
+      position: relative;
+      padding: 0 0 24px 24px;
+    }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-dot {
+      position: absolute;
+      left: -22px; top: 4px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      border: 3px solid var(--bg-card);
+      z-index: 1;
+    }
+    .timeline-item:hover .timeline-dot {
+      transform: scale(1.3);
+      transition: var(--transition);
+    }
+    .timeline-content {
+      padding: 14px 18px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+    }
+    .timeline-item:hover .timeline-content {
+      border-color: var(--primary-light);
+      box-shadow: var(--shadow-md);
+    }
+    .timeline-content h4 {
+      font-size: 14px; font-weight: 600; margin-bottom: 4px;
+    }
+    .timeline-content p {
+      font-size: 13px; color: var(--text-muted); line-height: 1.5;
+    }
+    .timeline-time {
+      font-size: 11px; color: var(--text-muted); font-weight: 500;
+      margin-top: 6px;
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    /* ---- IP Whitelist ---- */
+    .ip-list { display: flex; flex-direction: column; gap: 10px; }
+    .ip-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+    }
+    .ip-item:hover {
+      border-color: var(--primary-light);
+      box-shadow: var(--shadow-sm);
+    }
+    .ip-item-left {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .ip-item-left code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 14px; font-weight: 600;
+      color: var(--text-primary);
+      background: var(--bg-card);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+    .ip-item-left span {
+      font-size: 13px; color: var(--text-muted);
+    }
+
+    /* ---- Add Role Modal ---- */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: var(--bg-overlay);
+      z-index: 2000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      width: 100%; max-width: 560px;
+      max-height: 90vh;
+      overflow: hidden;
+      transform: scale(0.92) translateY(20px);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .modal-overlay.open .modal-panel { transform: scale(1) translateY(0); }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .modal-header h3 { font-size: 18px; font-weight: 700; }
+    .modal-close {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; cursor: pointer;
+      color: var(--text-muted);
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      transition: var(--transition-fast);
+    }
+    .modal-close:hover {
+      background: var(--danger-light); color: var(--danger); border-color: var(--danger);
+    }
+    .modal-body { padding: 28px; overflow-y: auto; max-height: calc(90vh - 160px); }
+    .modal-footer {
+      padding: 18px 28px;
+      border-top: 1px solid var(--border-color);
+      display: flex; justify-content: flex-end; gap: 10px;
+      background: var(--bg-input);
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 1024px) {
+      .sec-stats { grid-template-columns: repeat(2, 1fr); }
+      .roles-grid { grid-template-columns: repeat(2, 1fr); }
+      .sec-hero { flex-direction: column; text-align: center; gap: 24px; }
+      .sec-hero-checks { justify-content: center; }
+    }
+    @media (max-width: 768px) {
+      .sec-stats { grid-template-columns: 1fr; }
+      .roles-grid { grid-template-columns: 1fr; }
+      .sec-setting-row {
+        flex-direction: column; align-items: flex-start;
+      }
+      .perm-matrix th, .perm-matrix td {
+        padding: 10px 8px; font-size: 12px;
+      }
+      .sec-hero { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ============ ADD ROLE MODAL ============ -->
+  <div class="modal-overlay" id="roleModal">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h3>&#128274; Yeni Rol Olustur</h3>
+        <div class="modal-close" onclick="closeModal()" title="Kapat">&#10005;</div>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Rol Adi <span class="required">*</span></label>
+          <input type="text" class="form-input" placeholder="orn. Icerik Yöneticisi">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Açiklama</label>
+          <textarea class="form-input" rows="2" placeholder="Bu rolün sorumluluklarini tanimlayiniz..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Temel Rol <span class="required">*</span></label>
+          <select class="form-select">
+            <option>Bir temel rol seçin...</option>
+            <option>Süper Admin (Tüm yetkiler)</option>
+            <option>Admin</option>
+            <option>Editör</option>
+            <option>Moderatör</option>
+            <option>Kullanici</option>
+            <option>Görüntüleyici (Salt okunur)</option>
+          </select>
+          <p class="form-hint">Temel rol seçildikten sonra izinleri özellestirebilirsiniz.</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Renk</label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <div style="width:36px;height:36px;border-radius:8px;background:var(--gradient-primary);cursor:pointer;border:3px solid var(--text-primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">&#10003;</div>
+            <div style="width:36px;height:36px;border-radius:8px;background:var(--gradient-accent);cursor:pointer;border:3px solid transparent;"></div>
+            <div style="width:36px;height:36px;border-radius:8px;background:var(--gradient-success);cursor:pointer;border:3px solid transparent;"></div>
+            <div style="width:36px;height:36px;border-radius:8px;background:var(--gradient-warm);cursor:pointer;border:3px solid transparent;"></div>
+            <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#ec4899,#8b5cf6);cursor:pointer;border:3px solid transparent;"></div>
+            <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#64748b,#475569);cursor:pointer;border:3px solid transparent;"></div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <label class="form-label">Hizli Izin Ayarlari</label>
+        <div class="sec-setting-row" style="padding:14px 0;">
+          <div class="sec-setting-info">
+            <h4>Dashboard Erisimi</h4>
+            <p>Ana kontrol panelini görüntüleme</p>
+          </div>
+          <div class="perm-toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="sec-setting-row" style="padding:14px 0;">
+          <div class="sec-setting-info">
+            <h4>Kullanici Yönetimi</h4>
+            <p>Kullanici ekleme, düzenleme ve silme</p>
+          </div>
+          <div class="perm-toggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="sec-setting-row" style="padding:14px 0;">
+          <div class="sec-setting-info">
+            <h4>Ürün Yönetimi</h4>
+            <p>Ürün ekleme, düzenleme ve silme</p>
+          </div>
+          <div class="perm-toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="sec-setting-row" style="padding:14px 0;border-bottom:none;">
+          <div class="sec-setting-info">
+            <h4>Rapor Erisimi</h4>
+            <p>Analiz ve raporlari görüntüleme</p>
+          </div>
+          <div class="perm-toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" onclick="closeModal()">Iptal</button>
+        <button class="btn btn-primary btn-sm" onclick="closeModal()">&#10003; Rol Olustur</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">K</div>
+        <div class="sidebar-brand">
+          <h2>KurumsalCo</h2>
+          <span>Admin Panel</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Ana Menü</div>
+          <div class="sidebar-nav-item">
+            <a href="index.html" class="sidebar-nav-link">
+              <span class="icon">&#9673;</span> Dashboard
+            </a>
+          </div>
+          <div class="sidebar-nav-item sidebar-dropdown">
+            <div class="sidebar-nav-link" onclick="this.parentElement.classList.toggle('open')">
+              <span class="icon">&#9683;</span> Analizler <span class="arrow">&#9662;</span>
+            </div>
+            <div class="sidebar-submenu">
+              <a href="reports.html">Genel Bakis</a>
+              <a href="reports.html#traffic">Trafik Analizi</a>
+              <a href="reports.html#revenue">Gelir Raporu</a>
+            </div>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="reports.html" class="sidebar-nav-link">
+              <span class="icon">&#128202;</span> Raporlar
+            </a>
+          </div>
+        </div>
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Yönetim</div>
+          <div class="sidebar-nav-item">
+            <a href="users.html" class="sidebar-nav-link">
+              <span class="icon">&#9787;</span> Kullanicilar <span class="badge">24</span>
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="products.html" class="sidebar-nav-link">
+              <span class="icon">&#9830;</span> Ürünler
+            </a>
+          </div>
+          <div class="sidebar-nav-item sidebar-dropdown">
+            <div class="sidebar-nav-link" onclick="this.parentElement.classList.toggle('open')">
+              <span class="icon">&#9733;</span> E-Ticaret <span class="arrow">&#9662;</span>
+            </div>
+            <div class="sidebar-submenu">
+              <a href="#">Siparisler</a>
+              <a href="#">Kategoriler</a>
+              <a href="#">Kampanyalar</a>
+            </div>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="notifications.html" class="sidebar-nav-link">
+              <span class="icon">&#128276;</span> Bildirimler <span class="badge danger">12</span>
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="#" class="sidebar-nav-link">
+              <span class="icon">&#9993;</span> Mesajlar <span class="badge danger">5</span>
+            </a>
+          </div>
+        </div>
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Sistem</div>
+          <div class="sidebar-nav-item">
+            <a href="settings.html" class="sidebar-nav-link">
+              <span class="icon">&#9881;</span> Ayarlar
+            </a>
+          </div>
+          <div class="sidebar-nav-item">
+            <a href="security.html" class="sidebar-nav-link active">
+              <span class="icon">&#128274;</span> Güvenlik
+            </a>
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">AY</div>
+          <div class="sidebar-user-info">
+            <h4>Ahmet Yilmaz</h4>
+            <span>Süper Admin</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="topbar-menu-btn" onclick="toggleSidebar()">&#9776;</button>
+          <div class="topbar-search">
+            <span class="search-icon">&#128269;</span>
+            <input type="text" placeholder="Ara... (rol, izin, kullanici)">
+            <span class="search-shortcut">Ctrl+K</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="mega-menu-wrapper">
+            <div class="topbar-icon-btn" tabindex="0">&#9783;</div>
+            <div class="mega-menu">
+              <a href="index.html" class="mega-menu-item">
+                <div class="mega-icon" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#9673;</div>
+                <h4>Dashboard</h4><p>Genel bakis</p>
+              </a>
+              <a href="users.html" class="mega-menu-item">
+                <div class="mega-icon" style="background:rgba(6,182,212,0.1);color:var(--accent);">&#9787;</div>
+                <h4>Kullanicilar</h4><p>Kullanici yönetimi</p>
+              </a>
+              <a href="products.html" class="mega-menu-item">
+                <div class="mega-icon" style="background:rgba(16,185,129,0.1);color:var(--success);">&#9830;</div>
+                <h4>Ürünler</h4><p>Ürün katalogu</p>
+              </a>
+              <a href="settings.html" class="mega-menu-item">
+                <div class="mega-icon" style="background:rgba(245,158,11,0.1);color:var(--warning);">&#9881;</div>
+                <h4>Ayarlar</h4><p>Sistem ayarlari</p>
+              </a>
+              <a href="notifications.html" class="mega-menu-item">
+                <div class="mega-icon" style="background:rgba(239,68,68,0.1);color:var(--danger);">&#128276;</div>
+                <h4>Bildirimler</h4><p>Uyarilar</p>
+              </a>
+              <a href="security.html" class="mega-menu-item">
+                <div class="mega-icon" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#128274;</div>
+                <h4>Güvenlik</h4><p>Erisim kontrolü</p>
+              </a>
+            </div>
+          </div>
+          <div class="dropdown">
+            <div class="topbar-icon-btn" tabindex="0">&#128276;<span class="notification-dot"></span></div>
+            <div class="dropdown-menu" style="width:280px;">
+              <div style="padding:10px 14px;font-weight:700;font-size:14px;">Bildirimler</div>
+              <div class="dropdown-divider"></div>
+              <a href="notifications.html"><span style="color:var(--success);font-size:16px;">&#10003;</span><div><div style="font-weight:600;font-size:12px;">Yeni siparis</div><div style="font-size:11px;color:var(--text-muted);">2 dk önce</div></div></a>
+              <div class="dropdown-divider"></div>
+              <a href="notifications.html" style="justify-content:center;color:var(--primary);font-weight:600;font-size:12px;">Tümünü gör</a>
+            </div>
+          </div>
+          <div class="theme-toggle" onclick="toggleTheme()" title="Tema Degistir">
+            <div class="theme-toggle-circle"><span id="themeIcon">&#9788;</span></div>
+          </div>
+          <div class="dropdown">
+            <div class="topbar-user" tabindex="0">
+              <div class="topbar-user-avatar">AY</div>
+              <div><div class="topbar-user-name">Ahmet Yilmaz</div><div class="topbar-user-role">Süper Admin</div></div>
+            </div>
+            <div class="dropdown-menu">
+              <a href="#">&#128100; Profilim</a>
+              <a href="settings.html">&#9881; Ayarlar</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" style="color:var(--danger);">&#10145; Cikis Yap</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ==================== PAGE ==================== -->
+      <div class="page-wrapper">
+
+        <div class="breadcrumb animate-fade">
+          <a href="index.html">Ana Sayfa</a>
+          <span class="separator">&#10095;</span>
+          <span class="current">Güvenlik ve Erisim Kontrolü</span>
+        </div>
+
+        <div class="page-header animate-fade">
+          <div class="page-header-row">
+            <div>
+              <h1>Güvenlik ve Erisim Kontrolü</h1>
+              <p>Kullanici rolleri, izinler, oturum yönetimi ve güvenlik ayarlarini yapin.</p>
+            </div>
+            <div style="display:flex;gap:10px;">
+              <button class="btn btn-secondary btn-sm">&#128229; Denetim Raporu</button>
+              <button class="btn btn-primary btn-sm" onclick="openModal()">&#10010; Yeni Rol Olustur</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======== Security Score Hero ======== -->
+        <div class="sec-hero animate-fade">
+          <div class="sec-score-ring" style="background:conic-gradient(var(--success) 0deg 280.8deg, var(--border-color) 280.8deg 360deg);">
+            <div class="sec-score-inner">
+              <span class="score-num">78</span>
+              <span class="score-label">Puan</span>
+            </div>
+          </div>
+          <div class="sec-hero-info">
+            <h2>Güvenlik Skoru: Iyi</h2>
+            <p>Sisteminiz genel olarak güvende, ancak bazi iyilestirmeler yapilabilir. Asagidaki kontrol noktalarini inceleyerek güvenlik seviyenizi artirabilirsiniz.</p>
+            <div class="sec-hero-checks">
+              <div class="sec-check">
+                <div class="sec-check-icon pass">&#10003;</div>
+                <span>SSL Aktif</span>
+              </div>
+              <div class="sec-check">
+                <div class="sec-check-icon pass">&#10003;</div>
+                <span>Güçlü Sifreler</span>
+              </div>
+              <div class="sec-check">
+                <div class="sec-check-icon warn">&#33;</div>
+                <span>2FA Kismi</span>
+              </div>
+              <div class="sec-check">
+                <div class="sec-check-icon pass">&#10003;</div>
+                <span>Yedekleme</span>
+              </div>
+              <div class="sec-check">
+                <div class="sec-check-icon fail">&#10005;</div>
+                <span>IP Kisitlama</span>
+              </div>
+              <div class="sec-check">
+                <div class="sec-check-icon pass">&#10003;</div>
+                <span>Audit Log</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======== Stats ======== -->
+        <div class="sec-stats animate-fade">
+          <div class="sec-stat">
+            <div class="sec-stat-top">
+              <div class="sec-stat-icon" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#128274;</div>
+              <span class="badge badge-primary">Aktif</span>
+            </div>
+            <h3>6</h3>
+            <p>Tanimli Roller</p>
+          </div>
+          <div class="sec-stat">
+            <div class="sec-stat-top">
+              <div class="sec-stat-icon" style="background:rgba(16,185,129,0.1);color:var(--success);">&#128101;</div>
+              <span class="badge badge-success">Online</span>
+            </div>
+            <h3>24</h3>
+            <p>Aktif Oturum</p>
+          </div>
+          <div class="sec-stat">
+            <div class="sec-stat-top">
+              <div class="sec-stat-icon" style="background:rgba(245,158,11,0.1);color:var(--warning);">&#9888;</div>
+              <span class="badge badge-warning">Dikkat</span>
+            </div>
+            <h3>3</h3>
+            <p>Basarisiz Giris (24sa)</p>
+          </div>
+          <div class="sec-stat">
+            <div class="sec-stat-top">
+              <div class="sec-stat-icon" style="background:rgba(6,182,212,0.1);color:var(--accent);">&#128272;</div>
+              <span class="badge badge-info">SSL</span>
+            </div>
+            <h3>14</h3>
+            <p>Gün Sertifika Süresi</p>
+          </div>
+        </div>
+
+        <!-- ======== Role Cards ======== -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;" class="animate-fade">
+          <h2 style="font-size:20px;font-weight:800;">&#128274; Kullanici Rolleri</h2>
+          <button class="btn btn-sm btn-outline" onclick="openModal()">&#10010; Yeni Rol</button>
+        </div>
+
+        <div class="roles-grid animate-fade">
+          <!-- Super Admin -->
+          <div class="role-card super-admin">
+            <div class="role-card-header">
+              <div>
+                <h3>Süper Admin</h3>
+                <span>Tam yetki, tüm modüller</span>
+              </div>
+              <div class="role-card-icon" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#128081;</div>
+            </div>
+            <div class="role-card-perms">
+              <div class="role-perm"><div class="perm-dot on"></div> Dashboard ve Analizler</div>
+              <div class="role-perm"><div class="perm-dot on"></div> Kullanici Yönetimi (CRUD)</div>
+              <div class="role-perm"><div class="perm-dot on"></div> Ürün ve Siparis Yönetimi</div>
+              <div class="role-perm"><div class="perm-dot on"></div> Sistem Ayarlari</div>
+              <div class="role-perm"><div class="perm-dot on"></div> Güvenlik ve Roller</div>
+            </div>
+            <div class="role-card-footer">
+              <span class="role-user-count">&#128101; 2 kullanici</span>
+              <button class="btn btn-sm btn-ghost">Düzenle &#8594;</button>
+            </div>
+          </div>
+
+          <!-- Admin -->
+          <div class="role-card admin">
+            <div class="role-card-header">
+              <div>
+                <h3>Admin</h3>
+                <span>Genis yetki, sinirli sistem</span>
+              </div>
+              <div class="role-card-icon" style="background:rgba(6,182,212,0.1);color:var(--accent);">&#128119;</div>
+            </div>
+            <div class="role-card-perms">
+              <div class="role-perm"><div class="perm-dot on"></div> Dashboard ve Analizler</div>
+              <div class="role-perm"><div class="perm-dot on"></div> Kullanici Yönetimi (CRUD)</div>
+              <div class="role-perm"><div class="perm-dot on"></div> Ürün ve Siparis Yönetimi</div>
+              <div class="role-perm"><div class="perm-dot on"></div> Sistem Ayarlari (Okuma)</div>
+              <div class="role-perm disabled"><div class="perm-dot off"></div> Güvenlik ve Roller</div>
+            </div>
+            <div class="role-card-footer">
+              <span class="role-user-count">&#128101; 4 kullanici</span>
+              <button class="btn btn-sm btn-ghost">Düzenle &#8594;</button>
+            </div>
+          </div>
+
+          <!-- Editor -->
+          <div class="role-card editor">
+            <div class="role-card-header">
+              <div>
+                <h3>Editör</h3>
+                <span>Icerik düzenleme yetkisi</span>
+              </div>
+              <div class="role-card-icon" style="background:rgba(16,185,129,0.1);color:var(--success);">&#9998;</div>
+            </div>
+            <div class="role-card-perms">
+              <div class="role-perm"><div class="perm-dot on"></div> Dashboard (Okuma)</div>
+              <div class="role-perm disabled"><div class="perm-dot off"></div> Kullanici Yönetimi</div>
+              <div class="role-perm"><div class="perm-dot on"></div> Ürün Düzenleme</div>
+              <div class="role-perm"><div class="perm-dot on"></div> Icerik Yönetimi</div>
+              <div class="role-perm disabled"><div class="perm-dot off"></div> Sistem Ayarlari</div>
+            </div>
+            <div class="role-card-footer">
+              <span class="role-user-count">&#128101; 6 kullanici</span>
+              <button class="btn btn-sm btn-ghost">Düzenle &#8594;</button>
+            </div>
+          </div>
+
+          <!-- Moderator -->
+          <div class="role-card moderator">
+            <div class="role-card-header">
+              <div>
+                <h3>Moderatör</h3>
+                <span>Yorum ve icerik denetimi</span>
+              </div>
+              <div class="role-card-icon" style="background:rgba(245,158,11,0.1);color:var(--warning);">&#128737;</div>
+            </div>
+            <div class="role-card-perms">
+              <div class="role-perm"><div class="perm-dot on"></div> Dashboard (Okuma)</div>
+              <div class="role-perm disabled"><div class="perm-dot off"></div> Kullanici Yönetimi</div>
+              <div class="role-perm"><div class="perm-dot on"></div> Yorum Denetimi</div>
+              <div class="role-perm"><div class="perm-dot on"></div> Icerik Onaylama</div>
+              <div class="role-perm disabled"><div class="perm-dot off"></div> Sistem Ayarlari</div>
+            </div>
+            <div class="role-card-footer">
+              <span class="role-user-count">&#128101; 3 kullanici</span>
+              <button class="btn btn-sm btn-ghost">Düzenle &#8594;</button>
+            </div>
+          </div>
+
+          <!-- User -->
+          <div class="role-card user">
+            <div class="role-card-header">
+              <div>
+                <h3>Kullanici</h3>
+                <span>Temel erisim yetkileri</span>
+              </div>
+              <div class="role-card-icon" style="background:var(--bg-input);color:var(--text-muted);">&#128100;</div>
+            </div>
+            <div class="role-card-perms">
+              <div class="role-perm"><div class="perm-dot on"></div> Kendi Profili (CRUD)</div>
+              <div class="role-perm"><div class="perm-dot on"></div> Siparis Olusturma</div>
+              <div class="role-perm"><div class="perm-dot on"></div> Ürünleri Görüntüleme</div>
+              <div class="role-perm disabled"><div class="perm-dot off"></div> Admin Paneli</div>
+              <div class="role-perm disabled"><div class="perm-dot off"></div> Raporlar</div>
+            </div>
+            <div class="role-card-footer">
+              <span class="role-user-count">&#128101; 2,840 kullanici</span>
+              <button class="btn btn-sm btn-ghost">Düzenle &#8594;</button>
+            </div>
+          </div>
+
+          <!-- Viewer -->
+          <div class="role-card viewer">
+            <div class="role-card-header">
+              <div>
+                <h3>Görüntüleyici</h3>
+                <span>Salt okunur erisim</span>
+              </div>
+              <div class="role-card-icon" style="background:rgba(236,72,153,0.1);color:#ec4899;">&#128065;</div>
+            </div>
+            <div class="role-card-perms">
+              <div class="role-perm"><div class="perm-dot on"></div> Dashboard (Okuma)</div>
+              <div class="role-perm"><div class="perm-dot on"></div> Raporlari Görüntüleme</div>
+              <div class="role-perm disabled"><div class="perm-dot off"></div> Düzenleme</div>
+              <div class="role-perm disabled"><div class="perm-dot off"></div> Silme</div>
+              <div class="role-perm disabled"><div class="perm-dot off"></div> Sistem Ayarlari</div>
+            </div>
+            <div class="role-card-footer">
+              <span class="role-user-count">&#128101; 8 kullanici</span>
+              <button class="btn btn-sm btn-ghost">Düzenle &#8594;</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======== Permissions Matrix ======== -->
+        <div class="card mb-3 animate-slide-up">
+          <div class="card-header">
+            <h3>&#128272; Izin Matrisi</h3>
+            <div style="display:flex;gap:8px;">
+              <select class="form-select" style="height:36px;padding:0 28px 0 12px;font-size:13px;width:auto;">
+                <option>Tüm Modüller</option>
+                <option>Kullanicilar</option>
+                <option>Ürünler</option>
+                <option>Siparisler</option>
+                <option>Raporlar</option>
+              </select>
+              <button class="btn btn-sm btn-secondary">&#128229; Indir</button>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="perm-matrix">
+              <thead>
+                <tr>
+                  <th style="text-align:left;">Izin / Modül</th>
+                  <th>&#128081; S.Admin</th>
+                  <th>&#128119; Admin</th>
+                  <th>&#9998; Editör</th>
+                  <th>&#128737; Mod.</th>
+                  <th>&#128100; Kull.</th>
+                  <th>&#128065; Gör.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&#128202; Dashboard Görüntüleme</td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                </tr>
+                <tr>
+                  <td>&#128101; Kullanici Listeleme</td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                </tr>
+                <tr>
+                  <td>&#128101; Kullanici Ekleme/Düzenleme</td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                </tr>
+                <tr>
+                  <td>&#128465; Kullanici Silme</td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                </tr>
+                <tr>
+                  <td>&#9830; Ürün Yönetimi</td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                </tr>
+                <tr>
+                  <td>&#128179; Siparis Yönetimi</td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                </tr>
+                <tr>
+                  <td>&#128202; Rapor Görüntüleme</td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                </tr>
+                <tr>
+                  <td>&#9881; Sistem Ayarlari</td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                </tr>
+                <tr>
+                  <td>&#128274; Güvenlik ve Roller</td>
+                  <td><div class="perm-toggle on" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                  <td><div class="perm-toggle" onclick="this.classList.toggle('on')"></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-footer" style="display:flex;justify-content:flex-end;gap:10px;">
+            <button class="btn btn-sm btn-secondary">Iptal</button>
+            <button class="btn btn-sm btn-primary">&#10003; Izinleri Kaydet</button>
+          </div>
+        </div>
+
+        <!-- ======== Active Sessions + Security Settings ======== -->
+        <div class="grid-2 mb-3">
+          <!-- Active Sessions -->
+          <div class="card animate-slide-up">
+            <div class="card-header">
+              <h3>&#128187; Aktif Oturumlar</h3>
+              <button class="btn btn-sm btn-danger">Tümünü Sonlandir</button>
+            </div>
+            <div class="table-wrapper">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Cihaz</th>
+                    <th>IP Adresi</th>
+                    <th>Son Aktivite</th>
+                    <th>Islem</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div class="session-device">
+                        <div class="session-device-icon" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#128187;</div>
+                        <div class="session-device-info">
+                          <h4>Chrome - Windows</h4>
+                          <span>Istanbul, TR</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td style="font-family:monospace;font-size:13px;">192.168.1.42</td>
+                    <td><span class="session-current">&#9679; Simdi</span></td>
+                    <td style="color:var(--text-muted);font-size:12px;font-style:italic;">Bu oturum</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="session-device">
+                        <div class="session-device-icon" style="background:rgba(16,185,129,0.1);color:var(--success);">&#128241;</div>
+                        <div class="session-device-info">
+                          <h4>Safari - iPhone 15</h4>
+                          <span>Istanbul, TR</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td style="font-family:monospace;font-size:13px;">10.0.0.18</td>
+                    <td style="font-size:13px;color:var(--text-muted);">25 dk önce</td>
+                    <td><button class="btn btn-sm btn-ghost" style="color:var(--danger);">Sonlandir</button></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="session-device">
+                        <div class="session-device-icon" style="background:rgba(245,158,11,0.1);color:var(--warning);">&#128187;</div>
+                        <div class="session-device-info">
+                          <h4>Firefox - macOS</h4>
+                          <span>Ankara, TR</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td style="font-family:monospace;font-size:13px;">85.110.xx.xx</td>
+                    <td style="font-size:13px;color:var(--text-muted);">3 saat önce</td>
+                    <td><button class="btn btn-sm btn-ghost" style="color:var(--danger);">Sonlandir</button></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="session-device">
+                        <div class="session-device-icon" style="background:rgba(6,182,212,0.1);color:var(--accent);">&#128218;</div>
+                        <div class="session-device-info">
+                          <h4>Chrome - iPad</h4>
+                          <span>Izmir, TR</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td style="font-family:monospace;font-size:13px;">176.42.xx.xx</td>
+                    <td style="font-size:13px;color:var(--text-muted);">Dün 22:10</td>
+                    <td><button class="btn btn-sm btn-ghost" style="color:var(--danger);">Sonlandir</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Security Settings -->
+          <div class="card animate-slide-up">
+            <div class="card-header">
+              <h3>&#9881; Güvenlik Politikalari</h3>
+              <button class="btn btn-sm btn-primary">&#10003; Kaydet</button>
+            </div>
+            <div class="card-body" style="padding-top:4px;">
+              <div class="sec-setting-row">
+                <div class="sec-setting-info">
+                  <h4>&#128274; Iki Faktörlü Dogrulama (2FA)</h4>
+                  <p>Tüm admin kullanicilari için 2FA zorunlu kilin.</p>
+                </div>
+                <div class="perm-toggle on" onclick="this.classList.toggle('on')"></div>
+              </div>
+              <div class="sec-setting-row">
+                <div class="sec-setting-info">
+                  <h4>&#128272; Güçlü Sifre Politikasi</h4>
+                  <p>Min. 12 karakter, büyük/küçük harf, rakam ve özel karakter.</p>
+                </div>
+                <div class="perm-toggle on" onclick="this.classList.toggle('on')"></div>
+              </div>
+              <div class="sec-setting-row">
+                <div class="sec-setting-info">
+                  <h4>&#9203; Oturum Zaman Asimi</h4>
+                  <p>Belirli süre islemsizlik sonrasi otomatik cikis.</p>
+                </div>
+                <div class="sec-setting-action">
+                  <select class="form-select" style="width:130px;height:36px;font-size:13px;padding:0 28px 0 12px;">
+                    <option>15 dakika</option>
+                    <option selected>30 dakika</option>
+                    <option>1 saat</option>
+                    <option>4 saat</option>
+                  </select>
+                </div>
+              </div>
+              <div class="sec-setting-row">
+                <div class="sec-setting-info">
+                  <h4>&#128683; Giris Deneme Limiti</h4>
+                  <p>Basarisiz giris sonrasi hesabi geçici kilitle.</p>
+                </div>
+                <div class="sec-setting-action">
+                  <select class="form-select" style="width:130px;height:36px;font-size:13px;padding:0 28px 0 12px;">
+                    <option>3 deneme</option>
+                    <option selected>5 deneme</option>
+                    <option>10 deneme</option>
+                  </select>
+                </div>
+              </div>
+              <div class="sec-setting-row">
+                <div class="sec-setting-info">
+                  <h4>&#128260; Sifre Yenileme Süresi</h4>
+                  <p>Kullanicilari belirli araliklarla sifre degistirmeye zorla.</p>
+                </div>
+                <div class="sec-setting-action">
+                  <select class="form-select" style="width:130px;height:36px;font-size:13px;padding:0 28px 0 12px;">
+                    <option>30 gün</option>
+                    <option selected>90 gün</option>
+                    <option>180 gün</option>
+                    <option>Kapalı</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======== Activity Log + IP Whitelist ======== -->
+        <div class="grid-2 mb-3">
+          <!-- Activity Timeline -->
+          <div class="card animate-slide-up">
+            <div class="card-header">
+              <h3>&#128221; Güvenlik Aktivite Günlügü</h3>
+              <a href="#" class="btn btn-sm btn-ghost">Tümünü Gör &#8594;</a>
+            </div>
+            <div class="card-body">
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="timeline-dot" style="background:var(--success);"></div>
+                  <div class="timeline-content">
+                    <h4>Basarili giris - Ahmet Yilmaz</h4>
+                    <p>Chrome / Windows - Istanbul, 192.168.1.42</p>
+                    <div class="timeline-time">&#128339; Bugün, 14:32</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot" style="background:var(--danger);"></div>
+                  <div class="timeline-content">
+                    <h4>Basarisiz giris denemesi (3x)</h4>
+                    <p>Bilinmeyen - 185.42.xx.xx - Moskova, RU</p>
+                    <div class="timeline-time">&#128339; Bugün, 14:15</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot" style="background:var(--primary);"></div>
+                  <div class="timeline-content">
+                    <h4>Rol degisikligi - Can Ozturk</h4>
+                    <p>Editör &#8594; Admin (Ahmet Yilmaz tarafindan)</p>
+                    <div class="timeline-time">&#128339; 4 Sub, 10:30</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot" style="background:var(--warning);"></div>
+                  <div class="timeline-content">
+                    <h4>2FA devre disi birakildi - Selin B.</h4>
+                    <p>Kullanici kendi 2FA'sini kapatti.</p>
+                    <div class="timeline-time">&#128339; 3 Sub, 16:45</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot" style="background:var(--accent);"></div>
+                  <div class="timeline-content">
+                    <h4>Yeni kullanici olusturuldu - Elif K.</h4>
+                    <p>Editör rolü ile eklendi (Ahmet Yilmaz tarafindan)</p>
+                    <div class="timeline-time">&#128339; 2 Sub, 09:20</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-dot" style="background:var(--success);"></div>
+                  <div class="timeline-content">
+                    <h4>Sifre degistirildi - Zeynep K.</h4>
+                    <p>Kullanici kendi sifresini güncelledi.</p>
+                    <div class="timeline-time">&#128339; 1 Sub, 11:05</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- IP Whitelist / Blacklist -->
+          <div class="card animate-slide-up">
+            <div class="card-header">
+              <h3>&#127760; IP Erisim Kontrolü</h3>
+              <button class="btn btn-sm btn-primary">&#10010; IP Ekle</button>
+            </div>
+            <div class="card-body">
+              <div class="tabs" style="margin-bottom:20px;">
+                <div class="tab active">Beyaz Liste (4)</div>
+                <div class="tab">Kara Liste (2)</div>
+              </div>
+
+              <div class="ip-list">
+                <div class="ip-item">
+                  <div class="ip-item-left">
+                    <code>192.168.1.0/24</code>
+                    <span>Ofis agi - Istanbul</span>
+                  </div>
+                  <div style="display:flex;gap:6px;">
+                    <span class="badge badge-success">Aktif</span>
+                    <button class="btn btn-sm btn-ghost" style="color:var(--danger);padding:4px 8px;">&#128465;</button>
+                  </div>
+                </div>
+                <div class="ip-item">
+                  <div class="ip-item-left">
+                    <code>10.0.0.0/8</code>
+                    <span>VPN - Dahili erisim</span>
+                  </div>
+                  <div style="display:flex;gap:6px;">
+                    <span class="badge badge-success">Aktif</span>
+                    <button class="btn btn-sm btn-ghost" style="color:var(--danger);padding:4px 8px;">&#128465;</button>
+                  </div>
+                </div>
+                <div class="ip-item">
+                  <div class="ip-item-left">
+                    <code>85.110.45.0/24</code>
+                    <span>Ankara ofisi</span>
+                  </div>
+                  <div style="display:flex;gap:6px;">
+                    <span class="badge badge-success">Aktif</span>
+                    <button class="btn btn-sm btn-ghost" style="color:var(--danger);padding:4px 8px;">&#128465;</button>
+                  </div>
+                </div>
+                <div class="ip-item">
+                  <div class="ip-item-left">
+                    <code>176.42.80.0/24</code>
+                    <span>Izmir sunucu</span>
+                  </div>
+                  <div style="display:flex;gap:6px;">
+                    <span class="badge badge-warning">Bekleyen</span>
+                    <button class="btn btn-sm btn-ghost" style="color:var(--danger);padding:4px 8px;">&#128465;</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <!-- Add IP Form -->
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Yeni IP Adresi Ekle</label>
+                <div style="display:flex;gap:10px;">
+                  <input type="text" class="form-input" placeholder="orn. 192.168.1.0/24" style="flex:1;">
+                  <input type="text" class="form-input" placeholder="Açiklama" style="flex:1;">
+                  <button class="btn btn-sm btn-primary" style="white-space:nowrap;">&#10010; Ekle</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="mb-3">
+          <div class="alert alert-warning animate-fade">
+            <span style="font-size:20px;">&#9888;</span>
+            <div><strong>2FA tamamlanmamis.</strong> 3 admin kullanicisi henüz iki faktörlü dogrulamayi etkinlestirmedi. <a href="users.html" style="color:var(--warning);font-weight:600;text-decoration:underline;">Detay</a></div>
+          </div>
+          <div class="alert alert-danger animate-fade">
+            <span style="font-size:20px;">&#128274;</span>
+            <div><strong>SSL sertifikasi 14 gün içinde sona eriyor.</strong> kurumsal.com sertifikasini yenileyiniz. <a href="#" style="color:var(--danger);font-weight:600;text-decoration:underline;">Yenile</a></div>
+          </div>
+        </div>
+
+      </div><!-- /page-wrapper -->
+    </div><!-- /main-content -->
+  </div><!-- /layout -->
+
+  <script>
+    /* Theme */
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      var i = document.getElementById('themeIcon');
+      i.textContent = document.body.classList.contains('dark') ? '\u263E' : '\u2600';
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+      document.getElementById('themeIcon').textContent = '\u263E';
+    }
+
+    /* Sidebar */
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('mobile-open');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+    document.getElementById('sidebarOverlay').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.remove('mobile-open');
+      this.classList.remove('active');
+    });
+
+    /* Modal */
+    function openModal() {
+      document.getElementById('roleModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      document.getElementById('roleModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('roleModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    /* Tabs */
+    document.querySelectorAll('.tab').forEach(function(t) {
+      t.addEventListener('click', function() {
+        this.parentElement.querySelectorAll('.tab').forEach(function(x) { x.classList.remove('active'); });
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
