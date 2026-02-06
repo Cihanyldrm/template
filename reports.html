@@ -1875,41 +1875,6 @@
     </div><!-- /main-content -->
   </div><!-- /layout -->
 
-  <script>
-    // Theme Toggle
-    function toggleTheme() {
-      document.body.classList.toggle('dark');
-      var icon = document.getElementById('themeIcon');
-      icon.textContent = document.body.classList.contains('dark') ? '\u263E' : '\u2600';
-      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-    }
-
-    // Load saved theme
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark');
-      document.getElementById('themeIcon').textContent = '\u263E';
-    }
-
-    // Mobile sidebar toggle
-    function toggleSidebar() {
-      var sidebar = document.getElementById('sidebar');
-      var overlay = document.getElementById('sidebarOverlay');
-      sidebar.classList.toggle('mobile-open');
-      overlay.classList.toggle('active');
-    }
-
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      document.getElementById('sidebar').classList.remove('mobile-open');
-      this.classList.remove('active');
-    });
-
-    // Date pill active toggle
-    document.querySelectorAll('.date-pill').forEach(function(pill) {
-      pill.addEventListener('click', function() {
-        document.querySelectorAll('.date-pill').forEach(function(p) { p.classList.remove('active'); });
-        this.classList.add('active');
-      });
-    });
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>

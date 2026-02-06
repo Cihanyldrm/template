@@ -1332,40 +1332,9 @@
     </div><!-- /main-content -->
   </div><!-- /layout -->
 
+  <script src="app.js"></script>
   <script>
-    /* ---- Theme Toggle ---- */
-    function toggleTheme() {
-      document.body.classList.toggle('dark');
-      var icon = document.getElementById('themeIcon');
-      icon.textContent = document.body.classList.contains('dark') ? '\u263E' : '\u2600';
-      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-    }
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark');
-      document.getElementById('themeIcon').textContent = '\u263E';
-    }
-
-    /* ---- Mobile Sidebar ---- */
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('mobile-open');
-      document.getElementById('sidebarOverlay').classList.toggle('active');
-    }
-    document.getElementById('sidebarOverlay').addEventListener('click', function() {
-      document.getElementById('sidebar').classList.remove('mobile-open');
-      this.classList.remove('active');
-    });
-
-    /* ---- Filter Sidebar Active Toggle ---- */
-    document.querySelectorAll('.notif-filter-item[data-filter]').forEach(function(item) {
-      item.addEventListener('click', function() {
-        document.querySelectorAll('.notif-filter-item[data-filter]').forEach(function(i) {
-          i.classList.remove('active');
-        });
-        this.classList.add('active');
-      });
-    });
-
-    /* ---- Modal Data ---- */
+    /* ---- Page-specific: Notification Modal Data ---- */
     var modalData = {
       order1: {
         icon: '&#128230;', iconClass: 'order',
