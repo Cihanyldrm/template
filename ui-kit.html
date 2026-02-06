@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UI Kit / Component Library - KurumsalCo Admin Panel</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* =============================================
+       UI-KIT PAGE SPECIFIC STYLES
+       ============================================= */
+
+    /* Section titles */
+    .kit-section{margin-bottom:48px;}
+    .kit-section-header{
+      display:flex;align-items:center;gap:14px;
+      margin-bottom:24px;padding-bottom:16px;
+      border-bottom:2px solid var(--border-color);
+    }
+    .kit-section-num{
+      width:36px;height:36px;border-radius:var(--radius-md);
+      background:var(--gradient-primary);color:#fff;
+      display:flex;align-items:center;justify-content:center;
+      font-size:14px;font-weight:800;flex-shrink:0;
+    }
+    .kit-section-header h2{font-size:22px;font-weight:800;letter-spacing:-.3px;}
+    .kit-section-header p{font-size:14px;color:var(--text-muted);margin-left:auto;}
+
+    /* Component block */
+    .kit-block{margin-bottom:28px;}
+    .kit-block-title{
+      font-size:14px;font-weight:700;color:var(--text-secondary);
+      text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;
+      display:flex;align-items:center;gap:8px;
+    }
+    .kit-block-title::after{content:'';flex:1;height:1px;background:var(--border-color);}
+    .kit-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:14px;}
+    .kit-row-start{display:flex;flex-wrap:wrap;align-items:flex-start;gap:16px;margin-bottom:14px;}
+    .kit-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    .kit-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+    .kit-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+
+    /* Tooltip component */
+    .tooltip-wrapper{position:relative;display:inline-block;}
+    .tooltip-box{
+      position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(4px);
+      background:var(--bg-tooltip);color:var(--text-inverse);
+      padding:8px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;
+      white-space:nowrap;pointer-events:none;
+      opacity:0;transition:all .2s ease;z-index:50;
+      box-shadow:var(--shadow-lg);
+    }
+    body.dark .tooltip-box{background:#f1f5f9;color:#0f172a;}
+    .tooltip-box::after{
+      content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+      border:6px solid transparent;border-top-color:var(--bg-tooltip);
+    }
+    body.dark .tooltip-box::after{border-top-color:#f1f5f9;}
+    .tooltip-wrapper:hover .tooltip-box{opacity:1;transform:translateX(-50%) translateY(0);}
+
+    /* Popover */
+    .popover-wrapper{position:relative;display:inline-block;}
+    .popover-box{
+      position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(8px);
+      background:var(--bg-card);border:1px solid var(--border-color);
+      padding:16px 20px;border-radius:var(--radius-lg);
+      width:260px;box-shadow:var(--shadow-xl);
+      opacity:0;visibility:hidden;transition:all .25s ease;z-index:50;
+    }
+    .popover-wrapper:hover .popover-box,.popover-wrapper:focus-within .popover-box{
+      opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);
+    }
+    .popover-box h4{font-size:14px;font-weight:700;margin-bottom:6px;}
+    .popover-box p{font-size:13px;color:var(--text-muted);line-height:1.5;}
+
+    /* Color swatch */
+    .color-swatch{
+      width:100%;padding:18px 14px;border-radius:var(--radius-md);
+      font-size:12px;font-weight:600;color:#fff;text-align:center;
+      transition:var(--transition);cursor:default;
+    }
+    .color-swatch:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+    .color-swatch small{display:block;font-weight:400;opacity:.7;margin-top:4px;font-size:11px;}
+
+    /* Responsive */
+    @media(max-width:768px){
+      .kit-grid-2,.kit-grid-3,.kit-grid-4{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ============ DEMO MODALS ============ -->
+  <!-- Confirm Modal -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-panel" style="max-width:440px;">
+      <div class="modal-header">
+        <h3>&#9888; Islem Onayi</h3>
+        <div class="modal-close" data-modal-close="confirmModal">&#10005;</div>
+      </div>
+      <div class="modal-body" style="text-align:center;padding:32px 28px;">
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--warning-light);color:var(--warning);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 20px;">&#9888;</div>
+        <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;">Emin misiniz?</h3>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.6;">Bu islemi geri alamazsiniz. Devam etmek istediginizden emin misiniz?</p>
+      </div>
+      <div class="modal-footer" style="justify-content:center;gap:12px;">
+        <button class="btn btn-secondary" data-modal-close="confirmModal">Iptal</button>
+        <button class="btn btn-danger" onclick="closeModal('confirmModal');showToast({title:'Silindi',message:'Kayit basariyla silindi.',type:'danger',duration:3000})">Evet, Sil</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal-overlay" id="detailDemoModal">
+    <div class="modal-panel" style="max-width:560px;">
+      <div class="modal-header">
+        <h3>&#128196; Detay Görüntüle</h3>
+        <div class="modal-close" data-modal-close="detailDemoModal">&#10005;</div>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+          <div class="avatar lg" style="background:var(--gradient-primary);">AY</div>
+          <div>
+            <h3 style="font-size:18px;font-weight:700;">Ahmet Yilmaz</h3>
+            <p style="font-size:14px;color:var(--text-muted);">Süper Admin - Yazilim Departmani</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="padding:14px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:var(--radius-md);">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);font-weight:600;margin-bottom:4px;">E-posta</div>
+            <div style="font-size:14px;font-weight:600;">ahmet@kurumsal.com</div>
+          </div>
+          <div style="padding:14px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:var(--radius-md);">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);font-weight:600;margin-bottom:4px;">Telefon</div>
+            <div style="font-size:14px;font-weight:600;">+90 532 XXX XX XX</div>
+          </div>
+          <div style="padding:14px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:var(--radius-md);">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);font-weight:600;margin-bottom:4px;">Katilim</div>
+            <div style="font-size:14px;font-weight:600;">12 Ocak 2024</div>
+          </div>
+          <div style="padding:14px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:var(--radius-md);">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);font-weight:600;margin-bottom:4px;">Durum</div>
+            <div><span class="badge badge-success">&#10003; Aktif</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:flex-end;gap:10px;">
+        <button class="btn btn-secondary btn-sm" data-modal-close="detailDemoModal">Kapat</button>
+        <button class="btn btn-primary btn-sm">&#9998; Düzenle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert Modal -->
+  <div class="modal-overlay" id="alertDemoModal">
+    <div class="modal-panel" style="max-width:400px;">
+      <div class="modal-body" style="text-align:center;padding:40px 28px;">
+        <div style="width:72px;height:72px;border-radius:50%;background:rgba(16,185,129,.1);color:var(--success);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px;">&#10003;</div>
+        <h3 style="font-size:20px;font-weight:800;margin-bottom:8px;">Basarili!</h3>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.6;margin-bottom:24px;">Islem basariyla tamamlandi. Degisiklikler kaydedildi.</p>
+        <button class="btn btn-primary btn-block" data-modal-close="alertDemoModal">Tamam &#10003;</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">K</div>
+        <div class="sidebar-brand"><h2>KurumsalCo</h2><span>Admin Panel</span></div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Ana Menü</div>
+          <div class="sidebar-nav-item"><a href="index.html" class="sidebar-nav-link"><span class="icon">&#9673;</span> Dashboard</a></div>
+          <div class="sidebar-nav-item sidebar-dropdown">
+            <div class="sidebar-nav-link" onclick="this.parentElement.classList.toggle('open')"><span class="icon">&#9683;</span> Analizler <span class="arrow">&#9662;</span></div>
+            <div class="sidebar-submenu"><a href="reports.html">Genel Bakis</a><a href="reports.html#traffic">Trafik</a><a href="reports.html#revenue">Gelir</a></div>
+          </div>
+          <div class="sidebar-nav-item"><a href="reports.html" class="sidebar-nav-link"><span class="icon">&#128202;</span> Raporlar</a></div>
+        </div>
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Yönetim</div>
+          <div class="sidebar-nav-item"><a href="users.html" class="sidebar-nav-link"><span class="icon">&#9787;</span> Kullanicilar <span class="badge">24</span></a></div>
+          <div class="sidebar-nav-item"><a href="products.html" class="sidebar-nav-link"><span class="icon">&#9830;</span> Ürünler</a></div>
+          <div class="sidebar-nav-item sidebar-dropdown">
+            <div class="sidebar-nav-link" onclick="this.parentElement.classList.toggle('open')"><span class="icon">&#9733;</span> E-Ticaret <span class="arrow">&#9662;</span></div>
+            <div class="sidebar-submenu"><a href="#">Siparisler</a><a href="#">Kategoriler</a></div>
+          </div>
+          <div class="sidebar-nav-item"><a href="billing.html" class="sidebar-nav-link"><span class="icon">&#128179;</span> Faturalar</a></div>
+          <div class="sidebar-nav-item"><a href="notifications.html" class="sidebar-nav-link"><span class="icon">&#128276;</span> Bildirimler <span class="badge danger">12</span></a></div>
+        </div>
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-title">Sistem</div>
+          <div class="sidebar-nav-item"><a href="ui-kit.html" class="sidebar-nav-link active"><span class="icon">&#127912;</span> UI Kit</a></div>
+          <div class="sidebar-nav-item"><a href="settings.html" class="sidebar-nav-link"><span class="icon">&#9881;</span> Ayarlar</a></div>
+          <div class="sidebar-nav-item"><a href="security.html" class="sidebar-nav-link"><span class="icon">&#128274;</span> Güvenlik</a></div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">AY</div>
+          <div class="sidebar-user-info"><h4>Ahmet Yilmaz</h4><span>Süper Admin</span></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN ==================== -->
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="topbar-menu-btn" onclick="toggleSidebar()">&#9776;</button>
+          <div class="topbar-search">
+            <span class="search-icon">&#128269;</span>
+            <input type="text" placeholder="Component ara... (Ctrl+K)">
+            <span class="search-shortcut">Ctrl+K</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-icon-btn">&#128276;<span class="notification-dot"></span></div>
+          <div class="theme-toggle" onclick="toggleTheme()"><div class="theme-toggle-circle"><span id="themeIcon">&#9788;</span></div></div>
+          <div class="dropdown">
+            <div class="topbar-user" tabindex="0">
+              <div class="topbar-user-avatar">AY</div>
+              <div><div class="topbar-user-name">Ahmet Yilmaz</div><div class="topbar-user-role">Süper Admin</div></div>
+            </div>
+            <div class="dropdown-menu">
+              <a href="#">&#128100; Profilim</a><a href="settings.html">&#9881; Ayarlar</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" style="color:var(--danger);">&#10145; Cikis Yap</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ==================== PAGE ==================== -->
+      <div class="page-wrapper">
+
+        <div class="breadcrumb animate-fade">
+          <a href="index.html">Ana Sayfa</a>
+          <span class="separator">&#10095;</span>
+          <span class="current">UI Kit / Component Library</span>
+        </div>
+
+        <div class="page-header animate-fade">
+          <div class="page-header-row">
+            <div>
+              <h1>&#127912; UI Kit / Component Library</h1>
+              <p>KurumsalCo Admin Panel'in tüm tekrar kullanilabilir componentleri. Her birini kopyalayip projelerinizde kullanabilirsiniz.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="showToast({title:'Kopyalandi!',message:'Component kodu panoya kopyalandi.',type:'success',duration:2000})">&#128203; Dökümantasyon</button>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION 1: COLOR PALETTE
+             ============================================================ -->
+        <div class="kit-section animate-fade">
+          <div class="kit-section-header">
+            <div class="kit-section-num">1</div>
+            <h2>Renk Paleti</h2>
+            <p>Tüm CSS degiskenleri ile tanimli</p>
+          </div>
+          <div class="kit-block-title">Ana Renkler</div>
+          <div class="kit-grid-4" style="margin-bottom:16px;">
+            <div class="color-swatch" style="background:var(--primary);">Primary<small>#6366f1</small></div>
+            <div class="color-swatch" style="background:var(--accent);">Accent<small>#06b6d4</small></div>
+            <div class="color-swatch" style="background:var(--success);">Success<small>#10b981</small></div>
+            <div class="color-swatch" style="background:var(--warning);color:#0f172a;">Warning<small>#f59e0b</small></div>
+          </div>
+          <div class="kit-grid-4">
+            <div class="color-swatch" style="background:var(--danger);">Danger<small>#ef4444</small></div>
+            <div class="color-swatch" style="background:var(--info);">Info<small>#3b82f6</small></div>
+            <div class="color-swatch" style="background:var(--text-primary);">Text<small>#0f172a</small></div>
+            <div class="color-swatch" style="background:var(--text-muted);color:#fff;">Muted<small>#94a3b8</small></div>
+          </div>
+          <div class="kit-block-title" style="margin-top:20px;">Gradientler</div>
+          <div class="kit-grid-4">
+            <div class="color-swatch" style="background:var(--gradient-primary);height:60px;">Primary Gradient</div>
+            <div class="color-swatch" style="background:var(--gradient-accent);height:60px;">Accent Gradient</div>
+            <div class="color-swatch" style="background:var(--gradient-success);height:60px;">Success Gradient</div>
+            <div class="color-swatch" style="background:var(--gradient-warm);height:60px;">Warm Gradient</div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION 2: TYPOGRAPHY
+             ============================================================ -->
+        <div class="kit-section animate-fade">
+          <div class="kit-section-header">
+            <div class="kit-section-num">2</div>
+            <h2>Tipografi</h2>
+            <p>Inter font ailesi</p>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <div style="margin-bottom:20px;">
+                <h1 style="font-size:36px;font-weight:900;letter-spacing:-1px;margin-bottom:4px;">Heading 1 - 36px / 900</h1>
+                <h2 style="font-size:28px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px;">Heading 2 - 28px / 800</h2>
+                <h3 style="font-size:22px;font-weight:700;margin-bottom:4px;">Heading 3 - 22px / 700</h3>
+                <h4 style="font-size:18px;font-weight:600;margin-bottom:4px;">Heading 4 - 18px / 600</h4>
+                <h5 style="font-size:16px;font-weight:600;margin-bottom:4px;">Heading 5 - 16px / 600</h5>
+                <h6 style="font-size:14px;font-weight:600;">Heading 6 - 14px / 600</h6>
+              </div>
+              <p style="font-size:16px;margin-bottom:8px;">Body Text - 16px / 400 - Normal paragraf metni burada yer alir.</p>
+              <p style="font-size:14px;color:var(--text-secondary);margin-bottom:8px;">Secondary - 14px / 400 - Ikincil metin rengi.</p>
+              <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">Muted - 13px / 400 - Soluk yardimci metin.</p>
+              <p style="font-size:12px;color:var(--text-muted);">Caption - 12px / 400 - Küçük açiklama metni.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION 3: BUTTONS
+             ============================================================ -->
+        <div class="kit-section animate-fade">
+          <div class="kit-section-header">
+            <div class="kit-section-num">3</div>
+            <h2>Butonlar</h2>
+            <p>.btn + variant + size</p>
+          </div>
+
+          <div class="kit-block">
+            <div class="kit-block-title">Varyantlar</div>
+            <div class="kit-row">
+              <button class="btn btn-primary">&#10003; Primary</button>
+              <button class="btn btn-secondary">Secondary</button>
+              <button class="btn btn-success">Success</button>
+              <button class="btn btn-danger">Danger</button>
+              <button class="btn btn-outline">Outline</button>
+              <button class="btn btn-ghost">Ghost</button>
+            </div>
+          </div>
+
+          <div class="kit-block">
+            <div class="kit-block-title">Boyutlar</div>
+            <div class="kit-row">
+              <button class="btn btn-primary btn-sm">Small</button>
+              <button class="btn btn-primary">Normal</button>
+              <button class="btn btn-primary btn-lg">Large</button>
+            </div>
+          </div>
+
+          <div class="kit-block">
+            <div class="kit-block-title">Ikonlu & Durumlar</div>
+            <div class="kit-row">
+              <button class="btn btn-primary">&#10010; Yeni Ekle</button>
+              <button class="btn btn-secondary">&#128229; Indir</button>
+              <button class="btn btn-danger">&#128465; Sil</button>
+              <button class="btn btn-primary" disabled style="opacity:.5;cursor:not-allowed;">Disabled</button>
+              <button class="btn btn-primary btn-icon">&#10010;</button>
+              <button class="btn btn-secondary btn-icon sm">&#9998;</button>
+            </div>
+          </div>
+
+          <div class="kit-block">
+            <div class="kit-block-title">Tam Genislik</div>
+            <button class="btn btn-primary btn-block" style="max-width:400px;">&#10145; Tam Genislik Buton</button>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION 4: BADGES & LABELS
+             ============================================================ -->
+        <div class="kit-section animate-fade">
+          <div class="kit-section-header">
+            <div class="kit-section-num">4</div>
+            <h2>Badges ve Etiketler</h2>
+            <p>.badge + variant</p>
+          </div>
+          <div class="kit-block">
+            <div class="kit-block-title">Durum Badge'leri</div>
+            <div class="kit-row">
+              <span class="badge badge-success">&#10003; Aktif</span>
+              <span class="badge badge-warning">&#9203; Bekliyor</span>
+              <span class="badge badge-danger">&#10005; Hata</span>
+              <span class="badge badge-info">&#9432; Bilgi</span>
+              <span class="badge badge-primary">&#128274; Admin</span>
+            </div>
+          </div>
+          <div class="kit-block">
+            <div class="kit-block-title">Bildirim Badge'leri</div>
+            <div class="kit-row">
+              <span class="badge" style="background:var(--primary);color:#fff;">5</span>
+              <span class="badge danger" style="background:var(--danger);color:#fff;">12</span>
+              <span class="badge" style="background:var(--success);color:#fff;">&#10003;</span>
+              <span class="badge" style="background:var(--bg-input);color:var(--text-muted);">Taslak</span>
+            </div>
+          </div>
+          <div class="kit-block">
+            <div class="kit-block-title">Status Dot'lari</div>
+            <div class="kit-row">
+              <span style="display:flex;align-items:center;gap:6px;font-size:14px;"><span class="status-dot online"></span> Online</span>
+              <span style="display:flex;align-items:center;gap:6px;font-size:14px;"><span class="status-dot busy"></span> Mesgul</span>
+              <span style="display:flex;align-items:center;gap:6px;font-size:14px;"><span class="status-dot offline"></span> Çevrimdisi</span>
+            </div>
+          </div>
+          <div class="kit-block">
+            <div class="kit-block-title">Avatarlar</div>
+            <div class="kit-row">
+              <div class="avatar sm" style="background:var(--gradient-primary);">AY</div>
+              <div class="avatar" style="background:var(--gradient-accent);">ZK</div>
+              <div class="avatar lg" style="background:var(--gradient-success);">MD</div>
+              <div class="avatar xl" style="background:var(--gradient-warm);">SB</div>
+              <div class="avatar-group" style="margin-left:20px;">
+                <div class="avatar" style="background:var(--gradient-primary);">A</div>
+                <div class="avatar" style="background:var(--gradient-accent);">B</div>
+                <div class="avatar" style="background:var(--gradient-success);">C</div>
+                <div class="avatar" style="background:var(--gradient-warm);">+5</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION 5: CARDS
+             ============================================================ -->
+        <div class="kit-section animate-fade">
+          <div class="kit-section-header">
+            <div class="kit-section-num">5</div>
+            <h2>Kartlar</h2>
+            <p>.card + .card-header/body/footer</p>
+          </div>
+
+          <div class="kit-block">
+            <div class="kit-block-title">Stat Kartlari</div>
+            <div class="grid-4">
+              <div class="stat-card purple animate-fade">
+                <div class="stat-card-top">
+                  <div class="stat-card-icon purple">&#128176;</div>
+                  <div class="stat-card-trend up">&#8593; 12.5%</div>
+                </div>
+                <h3>&#8378;284,520</h3>
+                <p>Toplam Gelir</p>
+                <div class="stat-progress"><div class="stat-progress-bar purple" style="width:78%;"></div></div>
+              </div>
+              <div class="stat-card blue animate-fade">
+                <div class="stat-card-top">
+                  <div class="stat-card-icon blue">&#128179;</div>
+                  <div class="stat-card-trend up">&#8593; 8.3%</div>
+                </div>
+                <h3>1,842</h3>
+                <p>Siparisler</p>
+                <div class="stat-progress"><div class="stat-progress-bar blue" style="width:65%;"></div></div>
+              </div>
+              <div class="stat-card green animate-fade">
+                <div class="stat-card-top">
+                  <div class="stat-card-icon green">&#128101;</div>
+                  <div class="stat-card-trend up">&#8593; 24.1%</div>
+                </div>
+                <h3>3,456</h3>
+                <p>Kullanicilar</p>
+                <div class="stat-progress"><div class="stat-progress-bar green" style="width:82%;"></div></div>
+              </div>
+              <div class="stat-card orange animate-fade">
+                <div class="stat-card-top">
+                  <div class="stat-card-icon orange">&#128200;</div>
+                  <div class="stat-card-trend down">&#8595; 3.2%</div>
+                </div>
+                <h3>%67.8</h3>
+                <p>Dönüsüm</p>
+                <div class="stat-progress"><div class="stat-progress-bar orange" style="width:68%;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kit-block">
+            <div class="kit-block-title">Standart Kart</div>
+            <div class="grid-3">
+              <div class="card hover-lift">
+                <div class="card-header"><h3>Kart Basligi</h3><span class="badge badge-primary">Yeni</span></div>
+                <div class="card-body"><p style="font-size:14px;color:var(--text-secondary);">Kart gövdesi. Herhangi bir içerik buraya yerlestirilir. Padding: 24px.</p></div>
+                <div class="card-footer" style="display:flex;gap:8px;justify-content:flex-end;"><button class="btn btn-sm btn-ghost">Iptal</button><button class="btn btn-sm btn-primary">Kaydet</button></div>
+              </div>
+              <div class="card hover-lift">
+                <div class="card-body" style="text-align:center;padding:32px;">
+                  <div style="font-size:48px;margin-bottom:12px;">&#128640;</div>
+                  <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;">Bos Durum</h3>
+                  <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">Henüz veri bulunmuyor.</p>
+                  <button class="btn btn-sm btn-primary">&#10010; Yeni Ekle</button>
+                </div>
+              </div>
+              <div class="card hover-lift">
+                <div class="card-body">
+                  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                    <div class="avatar" style="background:var(--gradient-primary);">AY</div>
+                    <div><h4 style="font-size:15px;font-weight:600;">Ahmet Yilmaz</h4><span style="font-size:13px;color:var(--text-muted);">Süper Admin</span></div>
+                  </div>
+                  <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;">Profil karti örnegi. Kullanici bilgilerini gösteren kompakt tasarim.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION 6: FORMS
+             ============================================================ -->
+        <div class="kit-section animate-fade">
+          <div class="kit-section-header">
+            <div class="kit-section-num">6</div>
+            <h2>Form Elemanlari</h2>
+            <p>Input, Select, Textarea, Toggle</p>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Metin Girisi <span class="required">*</span></label>
+                  <input type="text" class="form-input" placeholder="Adinizi girin...">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">E-posta</label>
+                  <input type="email" class="form-input" placeholder="ornek@sirket.com">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Sifre</label>
+                  <input type="password" class="form-input" placeholder="Min. 8 karakter">
+                  <p class="form-hint">En az 8 karakter olmalıdır.</p>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Seçim Kutusu</label>
+                  <select class="form-select">
+                    <option>Seçiniz...</option>
+                    <option>Seçenek 1</option>
+                    <option>Seçenek 2</option>
+                    <option>Seçenek 3</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Metin Alani</label>
+                <textarea class="form-input" rows="3" placeholder="Açiklamanizi yazin..."></textarea>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:32px;margin-top:4px;">
+                <div>
+                  <div class="kit-block-title" style="margin-bottom:10px;">Checkbox</div>
+                  <div style="display:flex;flex-direction:column;gap:10px;">
+                    <label class="form-checkbox-group"><input type="checkbox" class="form-checkbox" checked> Seçenek A</label>
+                    <label class="form-checkbox-group"><input type="checkbox" class="form-checkbox"> Seçenek B</label>
+                    <label class="form-checkbox-group"><input type="checkbox" class="form-checkbox" disabled> Disabled</label>
+                  </div>
+                </div>
+                <div>
+                  <div class="kit-block-title" style="margin-bottom:10px;">Radio</div>
+                  <div style="display:flex;flex-direction:column;gap:10px;">
+                    <label class="form-checkbox-group"><input type="radio" name="demo-radio" class="form-checkbox" checked> Seçenek 1</label>
+                    <label class="form-checkbox-group"><input type="radio" name="demo-radio" class="form-checkbox"> Seçenek 2</label>
+                    <label class="form-checkbox-group"><input type="radio" name="demo-radio" class="form-checkbox"> Seçenek 3</label>
+                  </div>
+                </div>
+                <div>
+                  <div class="kit-block-title" style="margin-bottom:10px;">Toggle Switch</div>
+                  <div style="display:flex;flex-direction:column;gap:12px;">
+                    <div style="display:flex;align-items:center;gap:10px;"><div class="form-switch active"></div><span style="font-size:14px;">Aktif</span></div>
+                    <div style="display:flex;align-items:center;gap:10px;"><div class="form-switch"></div><span style="font-size:14px;">Pasif</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION 7: TABLES
+             ============================================================ -->
+        <div class="kit-section animate-fade">
+          <div class="kit-section-header">
+            <div class="kit-section-num">7</div>
+            <h2>Tablolar</h2>
+            <p>.table + .table-wrapper</p>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>Kullanici Tablosu</h3>
+              <button class="btn btn-sm btn-secondary">&#128229; Indir</button>
+            </div>
+            <div class="table-wrapper">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th><input type="checkbox" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;"></th>
+                    <th>Kullanici</th>
+                    <th>E-posta</th>
+                    <th>Rol</th>
+                    <th>Durum</th>
+                    <th>Islem</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><input type="checkbox" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;"></td>
+                    <td style="display:flex;align-items:center;gap:10px;"><div class="avatar sm" style="background:var(--gradient-primary);">AY</div><strong>Ahmet Yilmaz</strong></td>
+                    <td>ahmet@kurumsal.com</td>
+                    <td><span class="badge badge-primary">Admin</span></td>
+                    <td><span class="badge badge-success"><span class="status-dot online"></span> Aktif</span></td>
+                    <td style="display:flex;gap:4px;"><button class="btn btn-sm btn-ghost" style="padding:4px 8px;">&#9998;</button><button class="btn btn-sm btn-ghost" style="padding:4px 8px;color:var(--danger);">&#128465;</button></td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;"></td>
+                    <td style="display:flex;align-items:center;gap:10px;"><div class="avatar sm" style="background:var(--gradient-accent);">ZK</div><strong>Zeynep Kaya</strong></td>
+                    <td>zeynep@kurumsal.com</td>
+                    <td><span class="badge badge-info">Editör</span></td>
+                    <td><span class="badge badge-success"><span class="status-dot online"></span> Aktif</span></td>
+                    <td style="display:flex;gap:4px;"><button class="btn btn-sm btn-ghost" style="padding:4px 8px;">&#9998;</button><button class="btn btn-sm btn-ghost" style="padding:4px 8px;color:var(--danger);">&#128465;</button></td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;"></td>
+                    <td style="display:flex;align-items:center;gap:10px;"><div class="avatar sm" style="background:var(--gradient-warm);">SB</div><strong>Selin Basak</strong></td>
+                    <td>selin@kurumsal.com</td>
+                    <td><span class="badge badge-warning">Görüntüleyici</span></td>
+                    <td><span class="badge badge-danger"><span class="status-dot offline"></span> Deaktif</span></td>
+                    <td style="display:flex;gap:4px;"><button class="btn btn-sm btn-ghost" style="padding:4px 8px;">&#9998;</button><button class="btn btn-sm btn-ghost" style="padding:4px 8px;color:var(--danger);">&#128465;</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--border-color);font-size:13px;color:var(--text-muted);">
+              <span>1-3 / 24 kayit</span>
+              <div class="pagination">
+                <div class="pagination-btn disabled">&#8592;</div>
+                <div class="pagination-btn active">1</div>
+                <div class="pagination-btn">2</div>
+                <div class="pagination-btn">3</div>
+                <div class="pagination-btn">&#8594;</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION 8: MODALS / DIALOGS
+             ============================================================ -->
+        <div class="kit-section animate-fade">
+          <div class="kit-section-header">
+            <div class="kit-section-num">8</div>
+            <h2>Modaller / Diyaloglar</h2>
+            <p>.modal-overlay + .modal-panel</p>
+          </div>
+          <div class="kit-row">
+            <button class="btn btn-warning" data-modal-open="confirmModal">&#9888; Onay Diyalogu</button>
+            <button class="btn btn-primary" data-modal-open="detailDemoModal">&#128196; Detay Modal</button>
+            <button class="btn btn-success" data-modal-open="alertDemoModal">&#10003; Basari Alert</button>
+          </div>
+          <div class="alert alert-info" style="margin-top:16px;">
+            <span style="font-size:18px;">&#9432;</span>
+            <div>Modaller <code>data-modal-open="id"</code> ve <code>data-modal-close="id"</code> attribute'lari ile çalisir. Escape tusu veya overlay tiklama ile kapanir.</div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION 9: TABS
+             ============================================================ -->
+        <div class="kit-section animate-fade">
+          <div class="kit-section-header">
+            <div class="kit-section-num">9</div>
+            <h2>Tabs</h2>
+            <p>.tabs + .tab</p>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <div class="tabs" style="margin-bottom:0;">
+                <div class="tab active" data-target="#tabPanel1">&#128202; Genel Bakis</div>
+                <div class="tab" data-target="#tabPanel2">&#128101; Kullanicilar</div>
+                <div class="tab" data-target="#tabPanel3">&#9881; Ayarlar</div>
+                <div class="tab" data-target="#tabPanel4">&#128274; Güvenlik</div>
+              </div>
+              <div id="tabPanel1" class="tab-panel" style="padding:20px 0;">
+                <p style="font-size:14px;color:var(--text-secondary);">&#128202; <strong>Genel Bakis</strong> paneli icerigi. Dashboard istatistikleri, grafikler ve ozet bilgiler burada yer alir.</p>
+              </div>
+              <div id="tabPanel2" class="tab-panel" style="padding:20px 0;display:none;">
+                <p style="font-size:14px;color:var(--text-secondary);">&#128101; <strong>Kullanicilar</strong> paneli icerigi. Kullanici listesi, roller ve izinler burada yer alir.</p>
+              </div>
+              <div id="tabPanel3" class="tab-panel" style="padding:20px 0;display:none;">
+                <p style="font-size:14px;color:var(--text-secondary);">&#9881; <strong>Ayarlar</strong> paneli icerigi. Sistem konfigurasyonu ve tercihler burada yer alir.</p>
+              </div>
+              <div id="tabPanel4" class="tab-panel" style="padding:20px 0;display:none;">
+                <p style="font-size:14px;color:var(--text-secondary);">&#128274; <strong>Güvenlik</strong> paneli icerigi. Güvenlik politikalari ve erisim kontrolü burada yer alir.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION 10: ACCORDIONS
+             ============================================================ -->
+        <div class="kit-section animate-fade">
+          <div class="kit-section-header">
+            <div class="kit-section-num">10</div>
+            <h2>Accordion / Akordiyon</h2>
+            <p>data-accordion="single"</p>
+          </div>
+          <div class="card" style="overflow:hidden;">
+            <div data-accordion="single">
+              <div class="accordion-item open">
+                <div class="accordion-header">&#128640; Nasil baslarim? <span class="acc-arrow">&#9662;</span></div>
+                <div class="accordion-body"><p style="font-size:14px;color:var(--text-secondary);line-height:1.7;">Kayit olduktan sonra Dashboard sayfaniz otomatik olarak olusturulur. Sol menüden tüm modüllere erisebilirsiniz. Ilk adim olarak Ayarlar sayfasindan profil bilgilerinizi tamamlayin.</p></div>
+              </div>
+              <div class="accordion-item">
+                <div class="accordion-header">&#128274; Güvenlik ayarlari nelerdir? <span class="acc-arrow">&#9662;</span></div>
+                <div class="accordion-body"><p style="font-size:14px;color:var(--text-secondary);line-height:1.7;">Iki faktorlu dogrulama (2FA), IP kisitlama, oturum yonetimi ve sifre politikalari gibi guvenlik onlemleri mevcuttur. Guvenlik sayfasindan tum ayarlari yapabilirsiniz.</p></div>
+              </div>
+              <div class="accordion-item">
+                <div class="accordion-header">&#128176; Fatura ve odeme nasil yapilir? <span class="acc-arrow">&#9662;</span></div>
+                <div class="accordion-body"><p style="font-size:14px;color:var(--text-secondary);line-height:1.7;">Faturalar sayfasindan tum faturalarinizi gorebilir, PDF indirebilir ve odeme durumlarini takip edebilirsiniz. Kredi karti, banka havalesi ve PayPal ile odeme yapabilirsiniz.</p></div>
+              </div>
+              <div class="accordion-item">
+                <div class="accordion-header">&#128101; Kullanici rolleri nasil calisir? <span class="acc-arrow">&#9662;</span></div>
+                <div class="accordion-body"><p style="font-size:14px;color:var(--text-secondary);line-height:1.7;">6 farkli rol tanimlanabilir: Super Admin, Admin, Editor, Moderator, Kullanici ve Goruntuleyici. Her rolun izinlerini Guvenlik sayfasindaki Izin Matrisi'nden ozellestirebilirsiniz.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION 11: TOOLTIPS & POPOVERS
+             ============================================================ -->
+        <div class="kit-section animate-fade">
+          <div class="kit-section-header">
+            <div class="kit-section-num">11</div>
+            <h2>Tooltip ve Popover</h2>
+            <p>CSS-only hover components</p>
+          </div>
+          <div class="kit-block">
+            <div class="kit-block-title">Tooltip'ler</div>
+            <div class="kit-row" style="gap:24px;padding-top:8px;">
+              <div class="tooltip-wrapper">
+                <button class="btn btn-primary btn-sm">Hover Et</button>
+                <div class="tooltip-box">Bu bir tooltip mesajidir</div>
+              </div>
+              <div class="tooltip-wrapper">
+                <span class="badge badge-success" style="cursor:help;">&#10003; Aktif</span>
+                <div class="tooltip-box">Kullanici aktif durumda</div>
+              </div>
+              <div class="tooltip-wrapper">
+                <span style="font-size:20px;cursor:help;">&#9432;</span>
+                <div class="tooltip-box">Yardim bilgisi</div>
+              </div>
+            </div>
+          </div>
+          <div class="kit-block">
+            <div class="kit-block-title">Popover</div>
+            <div class="kit-row" style="gap:24px;padding-top:8px;">
+              <div class="popover-wrapper">
+                <button class="btn btn-secondary btn-sm" tabindex="0">&#9432; Detay Gör</button>
+                <div class="popover-box">
+                  <h4>&#128100; Kullanici Bilgisi</h4>
+                  <p>Ahmet Yilmaz - Süper Admin. Son giris: 2 saat önce. Toplam 142 islem gerçeklestirdi.</p>
+                </div>
+              </div>
+              <div class="popover-wrapper">
+                <button class="btn btn-outline btn-sm" tabindex="0">&#128202; Istatistik</button>
+                <div class="popover-box">
+                  <h4>&#128200; Haftalik Özet</h4>
+                  <p>Bu hafta 248 ziyaret, 42 siparis ve &#8378;18,450 gelir elde edildi.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION 12: ALERTS & TOASTS
+             ============================================================ -->
+        <div class="kit-section animate-fade">
+          <div class="kit-section-header">
+            <div class="kit-section-num">12</div>
+            <h2>Alerts ve Toast Bildirimleri</h2>
+            <p>.alert + showToast()</p>
+          </div>
+
+          <div class="kit-block">
+            <div class="kit-block-title">Inline Alert'ler (tikla kapat)</div>
+            <div class="alert alert-success"><span style="font-size:20px;">&#10003;</span><div><strong>Basarili!</strong> Islem basariyla tamamlandi.</div></div>
+            <div class="alert alert-warning"><span style="font-size:20px;">&#9888;</span><div><strong>Uyari!</strong> Bu islem geri alinamaz.</div></div>
+            <div class="alert alert-danger"><span style="font-size:20px;">&#10005;</span><div><strong>Hata!</strong> Bir sorun olustu, lütfen tekrar deneyin.</div></div>
+            <div class="alert alert-info"><span style="font-size:20px;">&#9432;</span><div><strong>Bilgi:</strong> Sistem bakimi 22:00'de basliyor.</div></div>
+          </div>
+
+          <div class="kit-block">
+            <div class="kit-block-title">Toast Bildirimleri (JS ile)</div>
+            <div class="kit-row">
+              <button class="btn btn-success btn-sm" onclick="showToast({title:'Basarili!',message:'Degisiklikler kaydedildi.',type:'success'})">&#10003; Success Toast</button>
+              <button class="btn btn-danger btn-sm" onclick="showToast({title:'Hata!',message:'Islem sirasinda bir sorun olustu.',type:'danger'})">&#10005; Danger Toast</button>
+              <button class="btn btn-secondary btn-sm" style="border-color:var(--warning);color:var(--warning);" onclick="showToast({title:'Dikkat!',message:'Stok seviyesi kritik durumda.',type:'warning'})">&#9888; Warning Toast</button>
+              <button class="btn btn-secondary btn-sm" style="border-color:var(--info);color:var(--info);" onclick="showToast({title:'Bilgi',message:'Yeni guncelleme mevcut.',type:'info'})">&#9432; Info Toast</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION 13: PROGRESS & LOADING
+             ============================================================ -->
+        <div class="kit-section animate-fade">
+          <div class="kit-section-header">
+            <div class="kit-section-num">13</div>
+            <h2>Progress Bar ve Yükleme</h2>
+            <p>.progress-bar-wrapper</p>
+          </div>
+          <div class="card">
+            <div class="card-body" style="display:flex;flex-direction:column;gap:20px;">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="font-weight:600;">Disk Kullanimi</span><span style="color:var(--text-muted);">82%</span></div>
+                <div class="progress-bar-wrapper"><div class="progress-bar-fill" style="width:82%;background:var(--gradient-primary);"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="font-weight:600;">Yükleme</span><span style="color:var(--success);">100%</span></div>
+                <div class="progress-bar-wrapper"><div class="progress-bar-fill" style="width:100%;background:var(--gradient-success);"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="font-weight:600;">CPU</span><span style="color:var(--warning);">45%</span></div>
+                <div class="progress-bar-wrapper"><div class="progress-bar-fill" style="width:45%;background:var(--gradient-warm);"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="font-weight:600;">Hata Orani</span><span style="color:var(--danger);">12%</span></div>
+                <div class="progress-bar-wrapper"><div class="progress-bar-fill" style="width:12%;background:var(--danger);"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION 14: KEYBOARD SHORTCUTS
+             ============================================================ -->
+        <div class="kit-section animate-fade">
+          <div class="kit-section-header">
+            <div class="kit-section-num">14</div>
+            <h2>Klavye Kisayollari</h2>
+            <p>app.js ile tanimli</p>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-color);font-size:14px;">
+                  <span style="color:var(--text-secondary);">Arama Aç</span>
+                  <div style="display:flex;gap:4px;"><span style="background:var(--bg-input);border:1px solid var(--border-color);padding:3px 8px;border-radius:4px;font-size:12px;font-weight:600;">Ctrl</span><span style="color:var(--text-muted);">+</span><span style="background:var(--bg-input);border:1px solid var(--border-color);padding:3px 8px;border-radius:4px;font-size:12px;font-weight:600;">K</span></div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-color);font-size:14px;">
+                  <span style="color:var(--text-secondary);">Tema Degistir</span>
+                  <div style="display:flex;gap:4px;"><span style="background:var(--bg-input);border:1px solid var(--border-color);padding:3px 8px;border-radius:4px;font-size:12px;font-weight:600;">Ctrl</span><span style="color:var(--text-muted);">+</span><span style="background:var(--bg-input);border:1px solid var(--border-color);padding:3px 8px;border-radius:4px;font-size:12px;font-weight:600;">Shift</span><span style="color:var(--text-muted);">+</span><span style="background:var(--bg-input);border:1px solid var(--border-color);padding:3px 8px;border-radius:4px;font-size:12px;font-weight:600;">D</span></div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-color);font-size:14px;">
+                  <span style="color:var(--text-secondary);">Sidebar Aç/Kapa</span>
+                  <div style="display:flex;gap:4px;"><span style="background:var(--bg-input);border:1px solid var(--border-color);padding:3px 8px;border-radius:4px;font-size:12px;font-weight:600;">Ctrl</span><span style="color:var(--text-muted);">+</span><span style="background:var(--bg-input);border:1px solid var(--border-color);padding:3px 8px;border-radius:4px;font-size:12px;font-weight:600;">B</span></div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-color);font-size:14px;">
+                  <span style="color:var(--text-secondary);">Modal / Sidebar Kapat</span>
+                  <div style="display:flex;gap:4px;"><span style="background:var(--bg-input);border:1px solid var(--border-color);padding:3px 8px;border-radius:4px;font-size:12px;font-weight:600;">Escape</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /page-wrapper -->
+    </div><!-- /main-content -->
+  </div><!-- /layout -->
+
+  <script src="app.js"></script>
+</body>
+</html>
