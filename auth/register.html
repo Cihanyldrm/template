@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kayit Ol - KurumsalCo</title>
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+  <div class="theme-btn" onclick="document.body.classList.toggle('dark');this.textContent=document.body.classList.contains('dark')?'\u263E':'\u2600'" title="Tema">&#9788;</div>
+  <div class="auth-page">
+    <div class="auth-side">
+      <div class="auth-side-content">
+        <div class="auth-side-logo">K</div>
+        <h2>Yeni Bir Baslangiç</h2>
+        <p>Hesabinizi olusturun ve isletmenizi yönetmeye hemen baslayin. Kredi karti gerekmez.</p>
+        <div class="auth-side-features">
+          <div class="auth-feature"><div class="auth-feature-icon">&#9889;</div> 30 saniyede kurulum</div>
+          <div class="auth-feature"><div class="auth-feature-icon">&#127873;</div> 14 gün ücretsiz deneme</div>
+          <div class="auth-feature"><div class="auth-feature-icon">&#128176;</div> Kredi karti gerekmez</div>
+          <div class="auth-feature"><div class="auth-feature-icon">&#128640;</div> Aninda erisim</div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-main">
+      <div class="auth-card">
+        <div class="auth-card-header">
+          <div class="auth-logo-sm">K</div>
+          <h1>Hesap Olustur &#128640;</h1>
+          <p>Zaten hesabiniz var mi? <a href="login.html">Giris Yap</a></p>
+        </div>
+        <form class="auth-form" onsubmit="return false;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group">
+              <label class="form-label">Ad <span class="req">*</span></label>
+              <div class="input-wrapper">
+                <span class="input-icon">&#128100;</span>
+                <input type="text" class="form-input" placeholder="Adiniz" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Soyad <span class="req">*</span></label>
+              <div class="input-wrapper">
+                <span class="input-icon">&#128100;</span>
+                <input type="text" class="form-input" placeholder="Soyadiniz" required>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">E-posta Adresi <span class="req">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">&#9993;</span>
+              <input type="email" class="form-input" placeholder="ornek@sirket.com" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sifre <span class="req">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">&#128274;</span>
+              <input type="password" class="form-input" placeholder="Min. 8 karakter" required>
+              <span class="input-toggle" onclick="var i=this.previousElementSibling;i.type=i.type==='password'?'text':'password'">&#128065;</span>
+            </div>
+            <div class="pw-strength"><div class="pw-bar strong"></div><div class="pw-bar strong"></div><div class="pw-bar medium"></div><div class="pw-bar"></div></div>
+            <div class="form-hint">En az 8 karakter, büyük/küçük harf ve rakam içermeli.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sifre Tekrar <span class="req">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">&#128274;</span>
+              <input type="password" class="form-input" placeholder="Sifrenizi tekrar girin" required>
+            </div>
+          </div>
+          <label class="form-check" style="margin-top:-4px;">
+            <input type="checkbox" required>
+            <span style="font-size:13px;"><a href="#" style="color:var(--primary);font-weight:600;">Kullanim Sartlari</a> ve <a href="#" style="color:var(--primary);font-weight:600;">Gizlilik Politikasi</a>'ni kabul ediyorum.</span>
+          </label>
+          <button type="submit" class="btn btn-primary btn-block">Hesap Olustur &#10145;</button>
+          <div class="social-divider">veya</div>
+          <div class="social-buttons">
+            <button type="button" class="social-btn">&#127312; Google</button>
+            <button type="button" class="social-btn">&#127310; GitHub</button>
+          </div>
+        </form>
+        <div class="auth-footer">
+          <p>&#128274; Verileriniz güvende</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

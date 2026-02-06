@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giris Yap - KurumsalCo</title>
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+  <div class="theme-btn" onclick="document.body.classList.toggle('dark');this.textContent=document.body.classList.contains('dark')?'\u263E':'\u2600'" title="Tema">&#9788;</div>
+  <div class="auth-page">
+    <div class="auth-side">
+      <div class="auth-side-content">
+        <div class="auth-side-logo">K</div>
+        <h2>KurumsalCo Admin Panel</h2>
+        <p>Isletmenizi tek bir yerden yönetin. Güçlü analizler, akilli raporlar ve eksiksiz kontrol.</p>
+        <div class="auth-side-features">
+          <div class="auth-feature"><div class="auth-feature-icon">&#128202;</div> Gerçek zamanli analiz ve raporlama</div>
+          <div class="auth-feature"><div class="auth-feature-icon">&#128274;</div> Kurumsal düzey güvenlik</div>
+          <div class="auth-feature"><div class="auth-feature-icon">&#128101;</div> Çok kullanicili rol yönetimi</div>
+          <div class="auth-feature"><div class="auth-feature-icon">&#127760;</div> Her cihazda kusursuz deneyim</div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-main">
+      <div class="auth-card">
+        <div class="auth-card-header">
+          <div class="auth-logo-sm">K</div>
+          <h1>Hosgeldiniz! &#128075;</h1>
+          <p>Hesabiniza giris yapin. Hesabiniz yok mu? <a href="register.html">Kayit Ol</a></p>
+        </div>
+        <form class="auth-form" onsubmit="return false;">
+          <div class="form-group">
+            <label class="form-label">E-posta Adresi <span class="req">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">&#9993;</span>
+              <input type="email" class="form-input" placeholder="ornek@sirket.com" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sifre <span class="req">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">&#128274;</span>
+              <input type="password" class="form-input" placeholder="Sifrenizi girin" required>
+              <span class="input-toggle" onclick="var i=this.previousElementSibling;i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'\u{1F441}':'\u{1F648}'">&#128065;</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="form-check"><input type="checkbox" checked> Beni hatirla</label>
+            <a href="forgot-password.html" class="form-link">Sifremi Unuttum</a>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Giris Yap &#10145;</button>
+          <div class="social-divider">veya</div>
+          <div class="social-buttons">
+            <button type="button" class="social-btn">&#127312; Google</button>
+            <button type="button" class="social-btn">&#127310; GitHub</button>
+          </div>
+        </form>
+        <div class="auth-footer">
+          <p>&#128274; 256-bit SSL ile korunmaktadir</p>
+          <p style="margin-top:6px;"><a href="#">Gizlilik Politikasi</a> &middot; <a href="#">Kullanim Sartlari</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
