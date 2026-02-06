@@ -1,1 +1,240 @@
-<!-- first commit -->
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KurumsalCo - Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">K</div>
+                <div>
+                    <h2>KurumsalCo</h2>
+                    <p class="subtitle">ADMIN PANEL</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <a href="#" class="nav-item">
+                        <span class="icon">📊</span>
+                        <span>Analizler</span>
+                        <span class="arrow">›</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="icon">📈</span>
+                        <span>Analytics</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="icon">📋</span>
+                        <span>Raporlar</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <p class="section-title">İÇERİLER</p>
+                    <a href="#" class="nav-item">
+                        <span class="icon">👥</span>
+                        <span>Kullanıcılar</span>
+                        <span class="badge">34</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="icon">📦</span>
+                        <span>Ürünler</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="icon">🛒</span>
+                        <span>E-Ticaret</span>
+                        <span class="arrow">›</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="icon">🧾</span>
+                        <span>Faturalar</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="icon">🔔</span>
+                        <span>Bildirimler</span>
+                        <span class="badge warning">12</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="icon">💬</span>
+                        <span>Mesajlar</span>
+                        <span class="badge danger">5</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <p class="section-title">SİSTEM</p>
+                    <a href="#" class="nav-item">
+                        <span class="icon">📝</span>
+                        <span>Audit Log</span>
+                    </a>
+                    <a href="#" class="nav-item active">
+                        <span class="icon">🎨</span>
+                        <span>UI Kit</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="icon">⚙️</span>
+                        <span>Ayarlar</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="icon">🔒</span>
+                        <span>Güvenlik</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">AY</div>
+                    <div class="user-info">
+                        <p class="user-name">Ahmet Yılmaz</p>
+                        <p class="user-role">Süper Admin</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Component ara... (Ctrl+K)">
+                    <span class="shortcut">Ctrl+K</span>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn">🔔</button>
+                    <button class="icon-btn">⚙️</button>
+                    <div class="user-avatar small">AY</div>
+                    <span class="user-name-header">Ahmet Yılmaz</span>
+                    <span class="user-role-header">Süper Admin</span>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <div class="breadcrumb">
+                    <span>Ana Sayfa</span>
+                    <span class="separator">/</span>
+                    <span>UI Kit / Component Library</span>
+                </div>
+
+                <div class="page-header">
+                    <div class="page-icon">🎨</div>
+                    <div>
+                        <h1>UI Kit / Component Library</h1>
+                        <p class="page-description">KurumsalCo Admin Panel'in tüm tekrar kullanılabilir componentleri. Her birini kolaylayıp projelenizde kullanabilirsiniz.</p>
+                    </div>
+                    <button class="btn-primary">📄 Dokümantasyon</button>
+                </div>
+
+                <div class="component-section">
+                    <div class="section-header">
+                        <span class="section-number">1</span>
+                        <h2>Renk Paleti</h2>
+                    </div>
+                    <p class="section-subtitle">Tüm CSS değişkenleri ile tanımlı</p>
+
+                    <div class="colors-section">
+                        <h3>ANA RENKLER</h3>
+                        <div class="color-grid">
+                            <div class="color-card primary">
+                                <div class="color-preview"></div>
+                                <div class="color-info">
+                                    <h4>Primary</h4>
+                                    <p>#6366f1</p>
+                                </div>
+                            </div>
+                            <div class="color-card accent">
+                                <div class="color-preview"></div>
+                                <div class="color-info">
+                                    <h4>Accent</h4>
+                                    <p>#06b6d4</p>
+                                </div>
+                            </div>
+                            <div class="color-card success">
+                                <div class="color-preview"></div>
+                                <div class="color-info">
+                                    <h4>Success</h4>
+                                    <p>#10b981</p>
+                                </div>
+                            </div>
+                            <div class="color-card warning">
+                                <div class="color-preview"></div>
+                                <div class="color-info">
+                                    <h4>Warning</h4>
+                                    <p>#f59e0b</p>
+                                </div>
+                            </div>
+                            <div class="color-card danger">
+                                <div class="color-preview"></div>
+                                <div class="color-info">
+                                    <h4>Danger</h4>
+                                    <p>#ef4444</p>
+                                </div>
+                            </div>
+                            <div class="color-card info">
+                                <div class="color-preview"></div>
+                                <div class="color-info">
+                                    <h4>Info</h4>
+                                    <p>#3b82f6</p>
+                                </div>
+                            </div>
+                            <div class="color-card text">
+                                <div class="color-preview"></div>
+                                <div class="color-info">
+                                    <h4>Text</h4>
+                                    <p>#0f172a</p>
+                                </div>
+                            </div>
+                            <div class="color-card muted">
+                                <div class="color-preview"></div>
+                                <div class="color-info">
+                                    <h4>Muted</h4>
+                                    <p>#94a3b8</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="colors-section">
+                        <h3>GRADİENTLER</h3>
+                        <div class="gradient-grid">
+                            <div class="gradient-card gradient-1">
+                                <div class="gradient-overlay">
+                                    <h4>Sunset</h4>
+                                    <p>linear-gradient(135deg, #667eea 0%, #764ba2 100%)</p>
+                                </div>
+                            </div>
+                            <div class="gradient-card gradient-2">
+                                <div class="gradient-overlay">
+                                    <h4>Ocean</h4>
+                                    <p>linear-gradient(135deg, #667eea 0%, #764ba2 100%)</p>
+                                </div>
+                            </div>
+                            <div class="gradient-card gradient-3">
+                                <div class="gradient-overlay">
+                                    <h4>Forest</h4>
+                                    <p>linear-gradient(135deg, #667eea 0%, #764ba2 100%)</p>
+                                </div>
+                            </div>
+                            <div class="gradient-card gradient-4">
+                                <div class="gradient-overlay">
+                                    <h4>Fire</h4>
+                                    <p>linear-gradient(135deg, #667eea 0%, #764ba2 100%)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
